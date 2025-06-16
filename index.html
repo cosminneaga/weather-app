@@ -1,22 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App - Generatia Tech - 2025</title>
-    <link type="module" rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="app">
-      <input type="text" name="city-input" id="city-input" />
+    <div class="container" id="app">
+      <h1 class="app-title">Weather App</h1>
 
-      <button type="button" id="search-btn">Search</button>
+      <form class="search-form">
+        <input
+          type="text"
+          class="search-input"
+          name="city-input"
+          id="city-input"
+          placeholder="Introdu numele orașului"
+        />
+        <button type="submit" class="search-btn" id="search-btn">Caută</button>
+      </form>
 
-      <div id="loading"></div>
-      <div id="error"></div>
-      <div id="weather-display"></div>
+      <div class="weather-card">
+        <div class="weather-header">
+          <span class="city-name" id="city-name">București</span>
+        </div>
+        <div class="weather-main">
+          <span class="weather-icon"></span>
+          <span class="temperature" id="temperature">22°C</span>
+        </div>
+        <div class="weather-desc" id="description">cer senin</div>
+        <div class="weather-details">
+          <div id="humidity">Umiditate: <span>56%</span></div>
+          <div id="pressure">Presiune: <span>1012 hPa</span></div>
+          <div id="wind">Vânt: <span>13.0 km/h</span></div>
+          <div id="visibility">Vizibilitate: <span>10 km</span></div>
+          <div id="sunrise">Răsărit: <span>08:10</span></div>
+          <div id="sunset">Apus: <span>23:10</span></div>
+        </div>
+
+        <div class="loader-overlay hidden" id="loading">
+          <div class="loader-spinner"></div>
+          <br />
+          <span>Se incarca datele vremii...</span>
+        </div>
+
+        <div class="error-overlay hidden" id="error-container">
+          <div class="error-box">
+            <button class="error-close" id="error-close">&times;</button>
+            <span class="error-icon">!</span>
+            <div class="error-title">Eroare</div>
+            <div class="error-message" id="error-message">
+              Ceva nu a mers bine. Încearcă din nou!
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
