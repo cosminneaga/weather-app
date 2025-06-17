@@ -1,3 +1,5 @@
+import * as config from '../modules/config.js';
+
 export const sleep = async (ms) => await new Promise((resolve) => setTimeout(resolve, ms));
 
 export const isValidCity = (city) => {
@@ -5,21 +7,34 @@ export const isValidCity = (city) => {
     return city.length >= 2 && /^[a-zA-ZăâîșțĂÂÎȘȚ\\s-]+$/.test(city)
 }
 
-export const convertWindSpeed = (speed, unit) => {
-    // Convertește m/s în km/h (×3.6)
+export const convertWindSpeedInKm = (speed) => {
+    return (speed * 3.6).toFixed(1);
 }
 
-export const convertDateUnixToLocale = (timestamp) => {
-    // Formatează timpurile Unix în ore locale (pentru răsărit și apus)
+export const convertDateUnixToLocaleTime = (timestamp) => {
+    return dayjs(timestamp).format('HH:MM')
 }
 
 export const convertVisibilityLength = (value) => {
-    // example 10000 = 10 km
-    // 1000 = 1 km
-    // 100 = 100 m
+    if (value <= 999) {
+        return `${value} m`
+    }
+
+    return `${(value / 1000).toFixed(1)} km`;
 }
 
 export const convertTemperature = (value, unit) => {
     // [(26 * 9/5) + 32] 26 'C' = 78.8 F
     // [(78 - 32) * 5/9] 78 'F' = 25.5 C
+
+    switch (unit) {
+        case 'C':
+            return `${((value * 9 / 5) + 32).toFixed(1)} F`;
+        case 'F':
+            return `${((value - 32) * 5 / 9).toFixed(1)} C`;
+    }
+}
+
+export const buildOpenWeatherIconURL = (icon_name) => {
+    return `${config.OPEN_WEATHER_ICON_BASE_HOST}/${icon_name}@2x.png`
 }

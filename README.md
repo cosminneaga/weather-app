@@ -1,23 +1,33 @@
 # Weather App 🌦️
 
-[Descriere captivantă]
+Descoperă Weather App – aplicația ta de vreme inteligentă, alimentată de OpenWeather!  
+Află detalii despre temperatură, umiditate, vânt, indice UV și multe altele – totul într-o singură aplicație modernă, rapidă și fiabilă!  
+Transformă fiecare zi într-o experiență fără surprize, cu Weather App – vremea exact așa cum vrei tu!
 
 ## 🚀 Features
 
-- [x] nimic
+- [x] Displaying the weather from OpenWeather API by city name
 
 ## 🛠️ Tech Stack
 
-- [Lista tehnologiilor]
+- HTML
+- CSS
+- JavaScript
+- dayjs - JS library to handle datetime
 
 ## 📦 Instalare
 
-[Pași clari pentru oricine]
+- Download the repo to your local PC
+- Open in VSCode
+- Install LiveServer extension in VSCode from [https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+- Right click on index.html
+- Click on "Open with LiveServer" option
+- If the browser windows won't open automatically than visualise the result on your browser at [http://localhost:5500/index.html](http://localhost:5500/index.html)
 
 ## 🗺️ Roadmap
 
 - [x] Part 1: Fundamente
-- [ ] Part 2: API real
+- [x] Part 2: API real
 - [ ] Part 3
 - [ ] Part 4
 

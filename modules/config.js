@@ -1,4 +1,5 @@
 export const OPEN_WEATHER_API_HOST = 'https://api.openweathermap.org/data/2.5/weather';
+export const OPEN_WEATHER_ICON_BASE_HOST = 'https://openweathermap.org/img/wn';
 export const OPEN_WEATHER_API_KEY = 'de99069cbd2c774fc89fd542da802b06';
 
 // Cum arată datele unei API meteo?

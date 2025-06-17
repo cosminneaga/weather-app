@@ -1,3 +1,5 @@
+import * as config from './modules/config.js';
 import * as ui from './modules/ui-controller.js';
 
-ui.displayWeather();
+ui.handleSearch('Cluj');
+ui.setupEventListeners();
