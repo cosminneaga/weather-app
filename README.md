@@ -6,7 +6,7 @@ Transformă fiecare zi într-o experiență fără surprize, cu Weather App – 
 
 ## 🚀 Features
 
-- [x] Displaying the weather from OpenWeather API by city name
+- [x] Arata informatiile despre vreme de la OpenWeather API folosind Vanilla Javascript
 
 ## 🛠️ Tech Stack
 
@@ -17,12 +17,12 @@ Transformă fiecare zi într-o experiență fără surprize, cu Weather App – 
 
 ## 📦 Instalare
 
-- Download the repo to your local PC
-- Open in VSCode
-- Install LiveServer extension in VSCode from [https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
-- Right click on index.html
-- Click on "Open with LiveServer" option
-- If the browser windows won't open automatically than visualise the result on your browser at [http://localhost:5500/index.html](http://localhost:5500/index.html)
+- Descarca aplicatia folosind comanda Git: `git clone https://github.com/cosminneaga/weather-app.git`
+- Deschide in VSCode
+- Instaleaza extensia LiveServer [https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+- Click dreapta pe `index.html`
+- Click pe optiunea "Open with LiveServer"
+- Daca fereastra browser-ului nu se deschide automat introdu urmatorul link in "address bar" [http://localhost:5500/index.html](http://localhost:5500/index.html)
 
 ## 🗺️ Roadmap
 
