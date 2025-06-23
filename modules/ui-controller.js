@@ -31,11 +31,8 @@ const elements = {
 export const setupEventListeners = () => {
   elements.searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
-  });
-
-  elements.searchBtn.addEventListener("click", (event) => {
-    event.preventDefault();
-    handleSearch(elements.cityInput.value);
+    const cityName = getCityInput().trim();
+    handleSearch(cityName);
   });
 
   elements.error.closeBtn.addEventListener("click", () => {
