@@ -1,20 +1,8 @@
-import { isValidCity, sleep } from "../modules/utils.js";
-import { MOCK_DATA, CONFIG, ERROR_MESSAGES } from "../modules/config.js";
-import ErrorHandler from "./error.js";
+import { isValidCity } from "../modules/utils.js";
+import { MOCK_DATA, CONFIG } from "../modules/config.js";
+import ErrorHandler from "./error-handler.js";
 
 export default class WeatherService {
-  constructor(type = "weather") {
-    this.type = type;
-    switch (type) {
-      case "weather":
-        this.base_url = CONFIG.API_BASE_URL;
-        break;
-      case "icon":
-        this.base_url = CONFIG.ICON_BASE_URL;
-        break;
-    }
-  }
-
   /**
    * Retrieves the current weather data for a specified city.
    * If the request fails, returns fallback mock data with error details.
@@ -25,17 +13,15 @@ export default class WeatherService {
    */
   async getCurrentWeather(city) {
     try {
-      await sleep(500);
       const request = await fetch(WeatherService._buildWeatherUrl("weather", { q: city }));
-
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
       }
 
-      const json = await request.json();
-      return json;
+      return await request.json();
     } catch (error) {
-      console.warn("Using fallback data due to:", error.message);
+      console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
+
       return {
         ...MOCK_DATA,
         isFallback: true,
@@ -63,12 +49,11 @@ export default class WeatherService {
     const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);
 
     url.searchParams.set("appid", CONFIG.API_KEY);
-    url.searchParams.set("units", "metric");
-    url.searchParams.set("lang", "en");
+    url.searchParams.set("units", CONFIG.DEFAULT_UNIT);
+    url.searchParams.set("lang", CONFIG.DEFAULT_LANG);
 
     Object.entries(params).forEach(([key, value]) => {
-      if (key === "city" && !isValidCity(value)) throw new Error(ERROR_MESSAGES.CITY_INVALID);
-
+      if (key === "city" && !isValidCity(value)) new ErrorHandler("CITY_INVALID").throw();
       url.searchParams.set(key, value);
     });
 
