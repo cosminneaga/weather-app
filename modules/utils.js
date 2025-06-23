@@ -1,7 +1,6 @@
 import * as config from "../modules/config.js";
 
-export const sleep = async (ms) =>
-  await new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = async (ms) => await new Promise((resolve) => setTimeout(resolve, ms));
 
 export const isValidCity = (city) => {
   // Gol? Prea scurt? Conține cifre/simboluri?
@@ -13,7 +12,7 @@ export const convertWindSpeedInKm = (speed) => {
 };
 
 export const convertDateUnixToLocaleTime = (timestamp) => {
-  return dayjs(timestamp).format("HH:MM");
+  return dayjs.unix(timestamp).format("HH:MM");
 };
 
 export const convertVisibilityLength = (value) => {
