@@ -5,6 +5,7 @@ import {
   convertWindSpeedInKm,
   isValidCity,
   getTemperatureSymbol,
+  getWindSpeedSuffix,
 } from "../modules/utils.js";
 import { CONFIG } from "../modules/config.js";
 
@@ -45,10 +46,9 @@ const elements = {
 };
 
 export const setupEventListeners = () => {
-  elements.searchForm.addEventListener("submit", (event) => {
+  elements.searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const cityName = getCityInput().trim();
-    handleSearch(cityName);
+    await handleSearch({ city_name: getCityInput().trim() });
   });
 
   elements.error.closeBtn.addEventListener("click", () => {
@@ -56,23 +56,26 @@ export const setupEventListeners = () => {
     hideError();
   });
 
-  elements.selector.language.select.addEventListener("change", (event) => {
+  elements.selector.language.select.addEventListener("change", async (event) => {
     console.log("Language", event.target.value);
+    await handleSearch({ language: event.target.value });
   });
-  elements.selector.temperature.select.addEventListener("change", (event) => {
+  elements.selector.temperature.select.addEventListener("change", async (event) => {
     console.log("Temperature", event.target.value);
+    CONFIG.DEFAULT_UNIT = event.target.value;
+    await handleSearch({ unit: event.target.value });
   });
   elements.selector.theme.select.addEventListener("change", (event) => {
     console.log("Theme", event.target.value);
   });
 };
 
-export const handleSearch = async (city_name, type = "weather") => {
+export const handleSearch = async ({ city_name = "Bucharest", language = "ro", unit = "metric" } = {}) => {
   showLoading();
 
   try {
-    const weatherService = new WeatherService(type);
-    const cityWeather = await weatherService.getCurrentWeather(city_name);
+    const weatherService = new WeatherService();
+    const cityWeather = await weatherService.getCurrentWeather(city_name, language, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
     displayWeather(cityWeather);
     clearCityInput();
@@ -103,7 +106,7 @@ export const hideError = () => {
   elements.error.message.textContent = "";
 };
 
-export const displayWeather = async (cityWeather) => {
+export const displayWeather = async (city_weather) => {
   const {
     name,
     weather,
@@ -111,7 +114,7 @@ export const displayWeather = async (cityWeather) => {
     wind: { speed },
     visibility,
     sys: { sunrise, sunset },
-  } = cityWeather;
+  } = city_weather;
 
   elements.cityName.textContent = name;
   elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
@@ -119,7 +122,7 @@ export const displayWeather = async (cityWeather) => {
   elements.description.textContent = weather[0].description;
   elements.humidity.children[0].textContent = `${humidity}%`;
   elements.pressure.children[0].textContent = `${pressure} hPa`;
-  elements.wind.children[0].textContent = `${convertWindSpeedInKm(speed)} km/h`;
+  elements.wind.children[0].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(CONFIG.DEFAULT_UNIT)}`;
   elements.visibility.children[0].textContent = `${convertVisibilityLength(visibility)}`;
   elements.sunrise.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
   elements.sunset.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;

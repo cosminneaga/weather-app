@@ -11,11 +11,11 @@ export default class WeatherService {
    * @param {string} city - The name of the city to fetch weather data for.
    * @returns {Promise<Object>} The weather data as a JSON object. If fallback is used, includes `isFallback` and `fallbackReason` properties.
    */
-  async getCurrentWeather(city) {
+  async getCurrentWeather(city, lang, unit) {
     try {
       if (!isValidCity(city)) new ErrorHandler("CITY_INVALID").throw();
 
-      const request = await fetch(WeatherService._buildWeatherUrl("weather", { q: city }));
+      const request = await fetch(WeatherService._buildWeatherUrl("weather", { q: city, lang: lang, units: unit }));
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
       }

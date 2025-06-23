@@ -42,3 +42,14 @@ export const getTemperatureSymbol = (unit) => {
       return "°F";
   }
 };
+
+export const getWindSpeedSuffix = (unit) => {
+  switch (unit) {
+    case "standard":
+      return "meter/sec";
+    case "metric":
+      return "meter/sec";
+    case "imperial":
+      return "miles/hour";
+  }
+};
