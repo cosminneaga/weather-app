@@ -13,6 +13,8 @@ export default class WeatherService {
    */
   async getCurrentWeather(city) {
     try {
+      if (!isValidCity(city)) new ErrorHandler("CITY_INVALID").throw();
+
       const request = await fetch(WeatherService._buildWeatherUrl("weather", { q: city }));
       if (!request.ok) {
         new ErrorHandler(request.status).throw();

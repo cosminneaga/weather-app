@@ -1,5 +1,3 @@
-import * as config from "../modules/config.js";
-
 export const sleep = async (ms) => await new Promise((resolve) => setTimeout(resolve, ms));
 
 export const isValidCity = (city) => {
@@ -28,8 +26,19 @@ export const convertTemperature = (value, unit) => {
 
   switch (unit) {
     case "C":
-      return `${((value * 9) / 5 + 32).toFixed(1)} F`;
+      return `${((value * 9) / 5 + 32).toFixed(1)} °F`;
     case "F":
-      return `${(((value - 32) * 5) / 9).toFixed(1)} C`;
+      return `${(((value - 32) * 5) / 9).toFixed(1)} °C`;
+  }
+};
+
+export const getTemperatureSymbol = (unit) => {
+  switch (unit) {
+    case "standard":
+      return "°K";
+    case "metric":
+      return "°C";
+    case "imperial":
+      return "°F";
   }
 };

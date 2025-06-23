@@ -24,36 +24,64 @@
         <button type="submit" class="search-btn" id="search-btn">Caută</button>
       </form>
 
-      <div class="weather-card">
-        <div class="weather-header">
-          <span class="city-name" id="city-name">București</span>
-        </div>
-        <div class="weather-main">
-          <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
-          <span class="temperature" id="temperature">22°C</span>
-        </div>
-        <div class="weather-desc" id="description">cer senin</div>
-        <div class="weather-details">
-          <div id="humidity">Umiditate: <span>56%</span></div>
-          <div id="pressure">Presiune: <span>1012 hPa</span></div>
-          <div id="wind">Vânt: <span>13.0 km/h</span></div>
-          <div id="visibility">Vizibilitate: <span>10 km</span></div>
-          <div id="sunrise">Răsărit: <span>08:10</span></div>
-          <div id="sunset">Apus: <span>23:10</span></div>
-        </div>
+      <div class="wrapper">
+        <div class="selectors">
+          <div class="selector">
+            <label for="selector-language"></label>
+            <select name="selector-language" id="selector-language" class="custom-select">
+              <option value="ro">RO</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
 
-        <div class="loader-overlay hidden" id="loading">
-          <div class="loader-spinner"></div>
-          <br />
-          <span>Se incarca datele vremii...</span>
-        </div>
+          <div class="selector">
+            <label for="selector-temperature"></label>
+            <select name="selector-temperature" id="selector-temperature" class="custom-select">
+              <option value="metric">Celcius</option>
+              <option value="imperial">Fahrenheit</option>
+              <option value="standard">Kelvin</option>
+            </select>
+          </div>
 
-        <div class="error-overlay hidden" id="error-container">
-          <div class="error-box">
-            <button class="error-close" id="error-close">&times;</button>
-            <span class="error-icon">!</span>
-            <div class="error-title">Eroare</div>
-            <div class="error-message" id="error-message">Ceva nu a mers bine. Încearcă din nou!</div>
+          <div class="selector">
+            <label for="selector-theme"></label>
+            <select name="selector-theme" id="selector-theme" class="custom-select">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+        </div>
+        <div class="weather-card">
+          <div class="weather-header">
+            <span class="city-name" id="city-name">București</span>
+          </div>
+          <div class="weather-main">
+            <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
+            <span class="temperature" id="temperature">22°C</span>
+          </div>
+          <div class="weather-desc" id="description">cer senin</div>
+          <div class="weather-details">
+            <div id="humidity">Umiditate: <span>56%</span></div>
+            <div id="pressure">Presiune: <span>1012 hPa</span></div>
+            <div id="wind">Vânt: <span>13.0 km/h</span></div>
+            <div id="visibility">Vizibilitate: <span>10 km</span></div>
+            <div id="sunrise">Răsărit: <span>08:10</span></div>
+            <div id="sunset">Apus: <span>23:10</span></div>
+          </div>
+
+          <div class="loader-overlay hidden" id="loading">
+            <div class="loader-spinner"></div>
+            <br />
+            <span>Se incarca datele vremii...</span>
+          </div>
+
+          <div class="error-overlay hidden" id="error-container">
+            <div class="error-box">
+              <button class="error-close" id="error-close">&times;</button>
+              <span class="error-icon">!</span>
+              <div class="error-title">Eroare</div>
+              <div class="error-message" id="error-message">Ceva nu a mers bine. Încearcă din nou!</div>
+            </div>
           </div>
         </div>
       </div>

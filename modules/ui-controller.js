@@ -4,7 +4,9 @@ import {
   convertVisibilityLength,
   convertWindSpeedInKm,
   isValidCity,
+  getTemperatureSymbol,
 } from "../modules/utils.js";
+import { CONFIG } from "../modules/config.js";
 
 const elements = {
   cityInput: document.querySelector("#city-input"),
@@ -26,6 +28,20 @@ const elements = {
     closeBtn: document.querySelector("#error-close"),
     message: document.querySelector("#error-message"),
   },
+  selector: {
+    language: {
+      label: document.querySelector('label[for="selector-language"]'),
+      select: document.querySelector("#selector-language"),
+    },
+    temperature: {
+      label: document.querySelector('label[for="selector-temperature"]'),
+      select: document.querySelector("#selector-temperature"),
+    },
+    theme: {
+      label: document.querySelector('label[for="selector-theme"]'),
+      select: document.querySelector("#selector-theme"),
+    },
+  },
 };
 
 export const setupEventListeners = () => {
@@ -39,14 +55,22 @@ export const setupEventListeners = () => {
     clearCityInput();
     hideError();
   });
+
+  elements.selector.language.select.addEventListener("change", (event) => {
+    console.log("Language", event.target.value);
+  });
+  elements.selector.temperature.select.addEventListener("change", (event) => {
+    console.log("Temperature", event.target.value);
+  });
+  elements.selector.theme.select.addEventListener("change", (event) => {
+    console.log("Theme", event.target.value);
+  });
 };
 
 export const handleSearch = async (city_name, type = "weather") => {
   showLoading();
 
   try {
-    if (!isValidCity(city_name)) throw new Error("Numele orasului nu e corect.");
-
     const weatherService = new WeatherService(type);
     const cityWeather = await weatherService.getCurrentWeather(city_name);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
@@ -91,13 +115,12 @@ export const displayWeather = async (cityWeather) => {
 
   elements.cityName.textContent = name;
   elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
-  elements.temperature.textContent = `${temp.toFixed(1)} C`;
+  elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(CONFIG.DEFAULT_UNIT)}`;
   elements.description.textContent = weather[0].description;
   elements.humidity.children[0].textContent = `${humidity}%`;
   elements.pressure.children[0].textContent = `${pressure} hPa`;
   elements.wind.children[0].textContent = `${convertWindSpeedInKm(speed)} km/h`;
   elements.visibility.children[0].textContent = `${convertVisibilityLength(visibility)}`;
-
   elements.sunrise.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
   elements.sunset.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
 };

@@ -55,10 +55,47 @@ export const CONFIG = {
   API_BASE_URL: "https://api.openweathermap.org/data/2.5",
   ICON_BASE_URL: "https://openweathermap.org/img/wn",
   DEFAULT_UNIT: "metric",
-  DEFAULT_LANG: "en",
+  DEFAULT_LANG: "ro",
 };
 
 export const API_ENDPOINTS = {
   CURRENT_WEATHER: "",
   FORECAST: "",
+};
+
+export const TRANSLATION = {
+  ro: {
+    inputPlaceholder: "Introdu numele orașului",
+    label: {
+      selector: {
+        language: "Selectează limbă",
+        temperature: "Selectează unitate temperatură",
+        theme: "Selectează temă",
+      },
+    },
+    searchButton: "Caută",
+    humidity: "Umiditate",
+    pressure: "Presiune",
+    wind: "Vănt",
+    visibility: "Vizibilitate",
+    sunrise: "Răsărit",
+    sunset: "Apus",
+  },
+  en: {
+    inputPlaceholder: "Enter city name",
+    label: {
+      selector: {
+        language: "Select language",
+        temperature: "Select temperature unit",
+        theme: "Select theme",
+      },
+    },
+    searchButton: "Search",
+    humidity: "Humidity",
+    pressure: "Pressure",
+    wind: "Wind",
+    visibility: "Visibility",
+    sunrise: "Sunrise",
+    sunset: "Sunset",
+  },
 };
