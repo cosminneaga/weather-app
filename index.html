@@ -6,6 +6,8 @@
     <title>Weather App - Generatia Tech - 2025</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script type="module" src="./app.js"></script>
   </head>
   <body>
     <div class="container" id="app">
@@ -27,12 +29,7 @@
           <span class="city-name" id="city-name">București</span>
         </div>
         <div class="weather-main">
-          <img
-            class="weather-icon"
-            id="icon"
-            alt="weather-icon"
-            src="./icons/sun.png"
-          />
+          <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
           <span class="temperature" id="temperature">22°C</span>
         </div>
         <div class="weather-desc" id="description">cer senin</div>
@@ -56,15 +53,10 @@
             <button class="error-close" id="error-close">&times;</button>
             <span class="error-icon">!</span>
             <div class="error-title">Eroare</div>
-            <div class="error-message" id="error-message">
-              Ceva nu a mers bine. Încearcă din nou!
-            </div>
+            <div class="error-message" id="error-message">Ceva nu a mers bine. Încearcă din nou!</div>
           </div>
         </div>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-    <script type="module" src="./app.js"></script>
   </body>
 </html>
