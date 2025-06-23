@@ -54,41 +54,11 @@ export const CONFIG = {
   API_KEY: "de99069cbd2c774fc89fd542da802b06",
   API_BASE_URL: "https://api.openweathermap.org/data/2.5",
   ICON_BASE_URL: "https://openweathermap.org/img/wn",
-  DEFAULT_UNITS: "metric",
+  DEFAULT_UNIT: "metric",
   DEFAULT_LANG: "en",
 };
 
 export const API_ENDPOINTS = {
   CURRENT_WEATHER: "",
   FORECAST: "",
-};
-
-export const ERROR_MESSAGES = [
-  { name: "CITY_INVALID", code: null, message: "Orasul nu e valid... Te rog introdu un oras valid." },
-  {
-    name: "CITY_NOT_FOUND",
-    code: 404,
-    message: "Orasul nu a fost gasit... Reincerca sa accesezi datele pentru un alt oras.",
-  },
-  { name: "NETWORK", code: null, message: "A aparut o eroare de retea... Reincerca mai tarziu." },
-  { name: "AUTH", code: 401, message: "Autentificare nereusita... Te rog incerca folosind alt token." },
-  { name: "SERVER", code: 500, message: "A aparut o eroare la server... Te rog incearca mai tarziu." },
-  { name: "GENERAL", code: null, message: "A aparut o eroare... Reincearca." },
-];
-
-export const getErrorMessage = (value) => {
-  let key = "";
-  switch (typeof value) {
-    case "number":
-      key = "code";
-      break;
-    case "string":
-      key = "name";
-      break;
-    default:
-      key = "code";
-      break;
-  }
-
-  return ERROR_MESSAGES.find((error) => error[key] === value) || null;
 };

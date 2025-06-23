@@ -3,7 +3,6 @@ import * as config from "../modules/config.js";
 export const sleep = async (ms) => await new Promise((resolve) => setTimeout(resolve, ms));
 
 export const isValidCity = (city) => {
-  // Gol? Prea scurt? Conține cifre/simboluri?
   return city.length >= 2 && /^[a-zA-ZăâîșțĂÂÎȘȚ\\s-]+$/.test(city);
 };
 
