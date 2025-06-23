@@ -1,5 +1,10 @@
 import WeatherService, * as service from "../modules/weather-service.js";
-import * as utils from "../modules/utils.js";
+import {
+  convertDateUnixToLocaleTime,
+  convertVisibilityLength,
+  convertWindSpeedInKm,
+  isValidCity,
+} from "../modules/utils.js";
 
 const elements = {
   cityInput: document.querySelector("#city-input"),
@@ -43,7 +48,7 @@ export const handleSearch = async (city_name, type = "weather") => {
   showLoading();
 
   try {
-    if (!utils.isValidCity(city_name)) throw new Error("Numele orasului nu e corect.");
+    if (!isValidCity(city_name)) throw new Error("Numele orasului nu e corect.");
 
     const weatherService = new WeatherService(type);
     const cityWeather = await weatherService.getCurrentWeather(city_name);
@@ -78,16 +83,26 @@ export const hideError = () => {
 };
 
 export const displayWeather = async (cityWeather) => {
-  elements.cityName.textContent = cityWeather.name;
-  elements.icon.src = WeatherService._buildIconUrl(cityWeather.weather[0].icon);
-  elements.temperature.textContent = `${cityWeather.main.temp.toFixed(1)} C`;
-  elements.description.textContent = cityWeather.weather[0].description;
-  elements.humidity.children[0].textContent = `${cityWeather.main.humidity}%`;
-  elements.pressure.children[0].textContent = `${cityWeather.main.pressure} hPa`;
-  elements.wind.children[0].textContent = `${utils.convertWindSpeedInKm(cityWeather.wind.speed)} km/h`;
-  elements.visibility.children[0].textContent = `${utils.convertVisibilityLength(cityWeather.visibility)}`;
-  elements.sunrise.children[0].textContent = `${utils.convertDateUnixToLocaleTime(cityWeather.sys.sunrise)}`;
-  elements.sunset.children[0].textContent = `${utils.convertDateUnixToLocaleTime(cityWeather.sys.sunset)}`;
+  const {
+    name,
+    weather,
+    main: { humidity, pressure, temp },
+    wind: { speed },
+    visibility,
+    sys: { sunrise, sunset },
+  } = cityWeather;
+
+  elements.cityName.textContent = name;
+  elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
+  elements.temperature.textContent = `${temp.toFixed(1)} C`;
+  elements.description.textContent = weather[0].description;
+  elements.humidity.children[0].textContent = `${humidity}%`;
+  elements.pressure.children[0].textContent = `${pressure} hPa`;
+  elements.wind.children[0].textContent = `${convertWindSpeedInKm(speed)} km/h`;
+  elements.visibility.children[0].textContent = `${convertVisibilityLength(visibility)}`;
+
+  elements.sunrise.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
+  elements.sunset.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
 };
 
 export const getCityInput = () => {
