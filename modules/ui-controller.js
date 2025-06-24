@@ -7,7 +7,7 @@ import {
   getTemperatureSymbol,
   getWindSpeedSuffix,
 } from "../modules/utils.js";
-import { CONFIG } from "../modules/config.js";
+import { CONFIG, getTranslation } from "../modules/config.js";
 
 const elements = {
   cityInput: document.querySelector("#city-input"),
@@ -57,14 +57,15 @@ export const setupEventListeners = () => {
   });
 
   elements.selector.language.select.addEventListener("change", async (event) => {
-    console.log("Language", event.target.value);
-    await handleSearch({ language: event.target.value });
+    CONFIG.DEFAULT_LANG = event.target.value;
+    await handleSearch({ unit: CONFIG.DEFAULT_UNIT, language: CONFIG.DEFAULT_LANG });
   });
+
   elements.selector.temperature.select.addEventListener("change", async (event) => {
-    console.log("Temperature", event.target.value);
     CONFIG.DEFAULT_UNIT = event.target.value;
-    await handleSearch({ unit: event.target.value });
+    await handleSearch({ unit: CONFIG.DEFAULT_UNIT, language: CONFIG.DEFAULT_LANG });
   });
+
   elements.selector.theme.select.addEventListener("change", (event) => {
     console.log("Theme", event.target.value);
   });
@@ -77,7 +78,7 @@ export const handleSearch = async ({ city_name = "Bucharest", language = "ro", u
     const weatherService = new WeatherService();
     const cityWeather = await weatherService.getCurrentWeather(city_name, language, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
-    displayWeather(cityWeather);
+    displayWeather(cityWeather, language);
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);
@@ -106,7 +107,7 @@ export const hideError = () => {
   elements.error.message.textContent = "";
 };
 
-export const displayWeather = async (city_weather) => {
+export const displayWeather = async (city_weather, language = "ro") => {
   const {
     name,
     weather,
@@ -120,12 +121,25 @@ export const displayWeather = async (city_weather) => {
   elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
   elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(CONFIG.DEFAULT_UNIT)}`;
   elements.description.textContent = weather[0].description;
-  elements.humidity.children[0].textContent = `${humidity}%`;
-  elements.pressure.children[0].textContent = `${pressure} hPa`;
-  elements.wind.children[0].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(CONFIG.DEFAULT_UNIT)}`;
-  elements.visibility.children[0].textContent = `${convertVisibilityLength(visibility)}`;
-  elements.sunrise.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
-  elements.sunset.children[0].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
+  elements.humidity.children[1].textContent = `${humidity}%`;
+  elements.pressure.children[1].textContent = `${pressure} hPa`;
+  elements.wind.children[1].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(CONFIG.DEFAULT_UNIT)}`;
+  elements.visibility.children[1].textContent = `${convertVisibilityLength(visibility)}`;
+  elements.sunrise.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
+  elements.sunset.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
+
+  displayTranslation(language);
+};
+
+export const displayTranslation = (language) => {
+  const { humidity, pressure, wind, visibility, sunset, sunrise } = getTranslation(language);
+
+  elements.humidity.children[0].textContent = humidity;
+  elements.pressure.children[0].textContent = pressure;
+  elements.wind.children[0].textContent = wind;
+  elements.visibility.children[0].textContent = visibility;
+  elements.sunrise.children[0].textContent = sunrise;
+  elements.sunset.children[0].textContent = sunset;
 };
 
 export const getCityInput = () => {

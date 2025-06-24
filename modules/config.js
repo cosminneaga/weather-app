@@ -99,3 +99,6 @@ export const TRANSLATION = {
     sunset: "Sunset",
   },
 };
+export const getTranslation = (lang) => {
+  return TRANSLATION[lang];
+};
