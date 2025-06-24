@@ -8,11 +8,14 @@ import {
   getWindSpeedSuffix,
 } from "../modules/utils.js";
 import { CONFIG, getTranslation } from "../modules/config.js";
+import ErrorHandler from "./error-handler.js";
+import AppStore from "./stores/index.js";
 
 const elements = {
   cityInput: document.querySelector("#city-input"),
   searchForm: document.querySelector("#search-form"),
   searchBtn: document.querySelector("#search-btn"),
+  card: document.querySelector("#weather-card"),
   cityName: document.querySelector("#city-name"),
   icon: document.querySelector("#icon"),
   temperature: document.querySelector("#temperature"),
@@ -48,7 +51,9 @@ const elements = {
 export const setupEventListeners = () => {
   elements.searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    await handleSearch({ city_name: getCityInput().trim() });
+    const appStore = new AppStore();
+    appStore.setCity(getCityInput().trim());
+    await handleSearch();
   });
 
   elements.error.closeBtn.addEventListener("click", () => {
@@ -57,33 +62,41 @@ export const setupEventListeners = () => {
   });
 
   elements.selector.language.select.addEventListener("change", async (event) => {
-    CONFIG.DEFAULT_LANG = event.target.value;
-    await handleSearch({ unit: CONFIG.DEFAULT_UNIT, language: CONFIG.DEFAULT_LANG });
+    const appStore = new AppStore();
+    appStore.setLang(event.target.value);
+    await handleSearch();
   });
 
   elements.selector.temperature.select.addEventListener("change", async (event) => {
-    CONFIG.DEFAULT_UNIT = event.target.value;
-    await handleSearch({ unit: CONFIG.DEFAULT_UNIT, language: CONFIG.DEFAULT_LANG });
+    const appStore = new AppStore();
+    appStore.setUnit(event.target.value);
+    await handleSearch();
   });
 
   elements.selector.theme.select.addEventListener("change", (event) => {
-    console.log("Theme", event.target.value);
+    const appStore = new AppStore();
+    appStore.setTheme(event.target.value);
   });
 };
 
-export const handleSearch = async ({ city_name = "Bucharest", language = "ro", unit = "metric" } = {}) => {
+export const handleSearch = async () => {
   showLoading();
+  const appStore = new AppStore();
+  const city = appStore.getCity();
+  const language = appStore.getLang();
+  const unit = appStore.getUnit();
 
   try {
     const weatherService = new WeatherService();
-    const cityWeather = await weatherService.getCurrentWeather(city_name, language, unit);
+    const cityWeather = await weatherService.getCurrentWeather(city, language, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
     displayWeather(cityWeather, language);
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);
     displayWeather(json);
-    showError(`${json.fallbackReason} Din cauza acestei erori un oras default numit ${json.name} a fost afisat...`);
+    const handler = new ErrorHandler("DISPLAY_WEATHER").get();
+    showError(`"${json.fallbackReason}" ${handler.message}`);
   }
 
   hideLoading();
@@ -116,14 +129,15 @@ export const displayWeather = async (city_weather, language = "ro") => {
     visibility,
     sys: { sunrise, sunset },
   } = city_weather;
+  const appStore = new AppStore();
 
   elements.cityName.textContent = name;
   elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
-  elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(CONFIG.DEFAULT_UNIT)}`;
-  elements.description.textContent = weather[0].description;
+  elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(appStore.getUnit())}`;
+  elements.description.textContent = weather.map((item) => item.description).join(", ");
   elements.humidity.children[1].textContent = `${humidity}%`;
   elements.pressure.children[1].textContent = `${pressure} hPa`;
-  elements.wind.children[1].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(CONFIG.DEFAULT_UNIT)}`;
+  elements.wind.children[1].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(appStore.getUnit())}`;
   elements.visibility.children[1].textContent = `${convertVisibilityLength(visibility)}`;
   elements.sunrise.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
   elements.sunset.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
