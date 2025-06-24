@@ -79,6 +79,13 @@ export const setupEventListeners = () => {
   });
 };
 
+export const setupSelectorDefaults = () => {
+  const appStore = new AppStore();
+  elements.selector.language.select.value = appStore.getLang();
+  elements.selector.temperature.select.value = appStore.getUnit();
+  elements.selector.theme.select.value = appStore.getTheme();
+};
+
 export const handleSearch = async () => {
   showLoading();
   const appStore = new AppStore();
