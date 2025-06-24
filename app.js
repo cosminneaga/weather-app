@@ -1,7 +1,4 @@
-import * as config from "./modules/config.js";
 import * as ui from "./modules/ui-controller.js";
-import ErrorHandler from "./modules/error-handler.js";
-import WeatherService from "./modules/weather-service.js";
 import AppStore from "./modules/stores/index.js";
 
 (function init() {

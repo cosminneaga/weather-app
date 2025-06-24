@@ -153,7 +153,8 @@ export const displayWeather = async (city_weather, language = "ro") => {
 };
 
 export const displayTranslation = (language) => {
-  const { humidity, pressure, wind, visibility, sunset, sunrise } = getTranslation(language);
+  const { humidity, pressure, wind, visibility, sunset, sunrise, inputPlaceholder, searchButton } =
+    getTranslation(language);
 
   elements.humidity.children[0].textContent = humidity;
   elements.pressure.children[0].textContent = pressure;
@@ -161,6 +162,9 @@ export const displayTranslation = (language) => {
   elements.visibility.children[0].textContent = visibility;
   elements.sunrise.children[0].textContent = sunrise;
   elements.sunset.children[0].textContent = sunset;
+
+  elements.cityInput.placeholder = inputPlaceholder;
+  elements.searchBtn.innerText = searchButton;
 };
 
 export const getCityInput = () => {

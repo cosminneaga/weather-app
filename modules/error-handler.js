@@ -1,9 +1,10 @@
-import { CONFIG } from "./config.js";
+import AppStore from "./stores/index.js";
 
 export default class ErrorHandler {
-  constructor(value, language = "ro") {
+  constructor(value) {
     this.value = value;
-    this.language = language;
+    const appStore = new AppStore();
+    this.language = appStore.getLang();
     this.errors = [
       {
         name: "CITY_INVALID",
