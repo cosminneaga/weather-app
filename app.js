@@ -2,12 +2,11 @@ import * as ui from "./modules/ui-controller.js";
 import AppStore from "./modules/stores/index.js";
 
 (function init() {
-  ui.showLoading();
   new AppStore("Cluj", "metric", "en", "light");
   ui.setupSelectorDefaults();
   ui.setupEventListeners();
   ui.handleSearch();
-  ui.hideLoading();
+  ui.setTheme();
 })();
 
 // obtine orasul la first render din locatia GPS - folosind coordonatele sau numele orasului

@@ -80,6 +80,7 @@ export const TRANSLATION = {
     visibility: "Vizibilitate",
     sunrise: "Răsărit",
     sunset: "Apus",
+    loading: "Se incarca datele vremii...",
   },
   en: {
     inputPlaceholder: "Enter city name",
@@ -97,6 +98,7 @@ export const TRANSLATION = {
     visibility: "Visibility",
     sunrise: "Sunrise",
     sunset: "Sunset",
+    loading: "Loading weather data...",
   },
 };
 export const getTranslation = (lang) => {

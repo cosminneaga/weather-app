@@ -12,7 +12,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background: linear-gradient(135deg, #5fd3f3 0%, #52c0ea 100%);
+    background-color: #5fd3f3;
 }
 
 .container {
@@ -20,6 +20,15 @@ body {
     width: 95%;
     margin: 40px auto;
     box-sizing: border-box;
+    color: white;
+    background: linear-gradient(135deg, #5fd3f3 0%, #52c0ea 100%);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.dark,
+body:has(div.dark) {
+    background: #1b1a1a;
 }
 
 .app-title {

@@ -7,11 +7,12 @@ import {
   getTemperatureSymbol,
   getWindSpeedSuffix,
 } from "../modules/utils.js";
-import { CONFIG, getTranslation } from "../modules/config.js";
+import { getTranslation } from "../modules/config.js";
 import ErrorHandler from "./error-handler.js";
 import AppStore from "./stores/index.js";
 
 const elements = {
+  app: document.querySelector("#app"),
   cityInput: document.querySelector("#city-input"),
   searchForm: document.querySelector("#search-form"),
   searchBtn: document.querySelector("#search-btn"),
@@ -27,6 +28,7 @@ const elements = {
   sunrise: document.querySelector("#sunrise"),
   sunset: document.querySelector("#sunset"),
   loading: document.querySelector("#loading"),
+  loadingMessage: document.querySelector("#loading-message"),
   error: {
     container: document.querySelector("#error-container"),
     closeBtn: document.querySelector("#error-close"),
@@ -49,9 +51,9 @@ const elements = {
 };
 
 export const setupEventListeners = () => {
+  const appStore = new AppStore();
   elements.searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const appStore = new AppStore();
     appStore.setCity(getCityInput().trim());
     await handleSearch();
   });
@@ -62,20 +64,18 @@ export const setupEventListeners = () => {
   });
 
   elements.selector.language.select.addEventListener("change", async (event) => {
-    const appStore = new AppStore();
     appStore.setLang(event.target.value);
     await handleSearch();
   });
 
   elements.selector.temperature.select.addEventListener("change", async (event) => {
-    const appStore = new AppStore();
     appStore.setUnit(event.target.value);
     await handleSearch();
   });
 
   elements.selector.theme.select.addEventListener("change", (event) => {
-    const appStore = new AppStore();
     appStore.setTheme(event.target.value);
+    setTheme();
   });
 };
 
@@ -97,7 +97,7 @@ export const handleSearch = async () => {
     const weatherService = new WeatherService();
     const cityWeather = await weatherService.getCurrentWeather(city, language, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
-    displayWeather(cityWeather, language);
+    displayWeather(cityWeather);
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);
@@ -127,7 +127,8 @@ export const hideError = () => {
   elements.error.message.textContent = "";
 };
 
-export const displayWeather = async (city_weather, language = "ro") => {
+export const displayWeather = async (city_weather) => {
+  const appStore = new AppStore();
   const {
     name,
     weather,
@@ -136,7 +137,6 @@ export const displayWeather = async (city_weather, language = "ro") => {
     visibility,
     sys: { sunrise, sunset },
   } = city_weather;
-  const appStore = new AppStore();
 
   elements.cityName.textContent = name;
   elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
@@ -149,12 +149,22 @@ export const displayWeather = async (city_weather, language = "ro") => {
   elements.sunrise.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
   elements.sunset.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
 
-  displayTranslation(language);
+  displayTranslation(appStore.getLang());
 };
 
-export const displayTranslation = (language) => {
-  const { humidity, pressure, wind, visibility, sunset, sunrise, inputPlaceholder, searchButton } =
-    getTranslation(language);
+const displayTranslation = (language) => {
+  const {
+    humidity,
+    pressure,
+    wind,
+    visibility,
+    sunset,
+    sunrise,
+    inputPlaceholder,
+    searchButton,
+    label: { selector },
+    loading,
+  } = getTranslation(language);
 
   elements.humidity.children[0].textContent = humidity;
   elements.pressure.children[0].textContent = pressure;
@@ -165,12 +175,23 @@ export const displayTranslation = (language) => {
 
   elements.cityInput.placeholder = inputPlaceholder;
   elements.searchBtn.innerText = searchButton;
+
+  elements.selector.language.label.textContent = selector.language;
+  elements.selector.temperature.label.textContent = selector.temperature;
+  elements.selector.theme.label.textContent = selector.theme;
+
+  elements.loadingMessage.textContent = loading;
 };
 
-export const getCityInput = () => {
+export const setTheme = () => {
+  const appStore = new AppStore();
+  elements.app.className = `container ${appStore.getTheme()}`;
+};
+
+const getCityInput = () => {
   return elements.cityInput.value;
 };
 
-export const clearCityInput = () => {
+const clearCityInput = () => {
   elements.cityInput.value = "";
 };
