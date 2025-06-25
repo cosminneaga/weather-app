@@ -47,6 +47,7 @@ const elements = {
       select: document.querySelector("#selector-theme"),
     },
   },
+  searchHistoryList: document.querySelector("#weather-search-history-list"),
 };
 
 export const setupEventListeners = () => {
@@ -98,6 +99,7 @@ export const handleSearch = async () => {
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
     displayWeather(cityWeather);
     appStore.addToListCitiesHistory(cityWeather);
+    displaySearchHistoryAndSetupEvents(appStore.getList());
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);
@@ -194,4 +196,26 @@ const getCityInput = () => {
 
 const clearCityInput = () => {
   elements.cityInput.value = "";
+};
+
+const displaySearchHistoryAndSetupEvents = (data) => {
+  const appStore = new AppStore();
+  elements.searchHistoryList.innerHTML = "";
+  data.forEach((item) => {
+    const li = document.createElement("li");
+    li.setAttribute("data-city", JSON.stringify(item));
+    li.textContent = item?.name + " ";
+
+    const button = document.createElement("button");
+    button.id = "search-history-delete-item";
+    button.textContent = "X";
+    button.addEventListener("click", function (event) {
+      const city_name = JSON.parse(li.dataset.city).name;
+      appStore.removeCityFromListByName(city_name);
+      li.remove();
+    });
+    li.appendChild(button);
+    elements.searchHistoryList.appendChild(li);
+    setupEventListeners();
+  });
 };
