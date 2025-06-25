@@ -23,8 +23,6 @@ export default class AppStore {
       theme: this.theme,
       list: this.list,
     };
-    console.log(data);
-
     localStorage.setItem(this.constructor.name, JSON.stringify(data));
   }
 
