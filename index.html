@@ -6,65 +6,79 @@
     <title>Weather App - Generatia Tech - 2025</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script type="module" src="./app.js"></script>
   </head>
   <body>
     <div class="container" id="app">
       <h1 class="app-title">Weather App</h1>
 
       <form class="search-form" id="search-form">
-        <input
-          type="text"
-          class="search-input"
-          name="city-input"
-          id="city-input"
-          placeholder="Introdu numele orașului"
-        />
-        <button type="submit" class="search-btn" id="search-btn">Caută</button>
+        <input type="text" class="search-input" name="city-input" id="city-input" placeholder="Enter city name" />
+        <button type="submit" class="search-btn" id="search-btn">Search</button>
       </form>
 
-      <div class="weather-card">
-        <div class="weather-header">
-          <span class="city-name" id="city-name">București</span>
-        </div>
-        <div class="weather-main">
-          <img
-            class="weather-icon"
-            id="icon"
-            alt="weather-icon"
-            src="./icons/sun.png"
-          />
-          <span class="temperature" id="temperature">22°C</span>
-        </div>
-        <div class="weather-desc" id="description">cer senin</div>
-        <div class="weather-details">
-          <div id="humidity">Umiditate: <span>56%</span></div>
-          <div id="pressure">Presiune: <span>1012 hPa</span></div>
-          <div id="wind">Vânt: <span>13.0 km/h</span></div>
-          <div id="visibility">Vizibilitate: <span>10 km</span></div>
-          <div id="sunrise">Răsărit: <span>08:10</span></div>
-          <div id="sunset">Apus: <span>23:10</span></div>
-        </div>
+      <div class="wrapper">
+        <div class="selectors">
+          <div class="selector">
+            <label for="selector-language">Select language</label>
+            <select name="selector-language" id="selector-language" class="custom-select">
+              <option value="ro">RO</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
 
-        <div class="loader-overlay hidden" id="loading">
-          <div class="loader-spinner"></div>
-          <br />
-          <span>Se incarca datele vremii...</span>
-        </div>
+          <div class="selector">
+            <label for="selector-temperature">Select temperature unit</label>
+            <select name="selector-temperature" id="selector-temperature" class="custom-select">
+              <option value="metric">Celcius</option>
+              <option value="imperial">Fahrenheit</option>
+              <option value="standard">Kelvin</option>
+            </select>
+          </div>
 
-        <div class="error-overlay hidden" id="error-container">
-          <div class="error-box">
-            <button class="error-close" id="error-close">&times;</button>
-            <span class="error-icon">!</span>
-            <div class="error-title">Eroare</div>
-            <div class="error-message" id="error-message">
-              Ceva nu a mers bine. Încearcă din nou!
+          <div class="selector">
+            <label for="selector-theme">Select theme</label>
+            <select name="selector-theme" id="selector-theme" class="custom-select">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+        </div>
+        <div class="weather-card" id="weather-card">
+          <div class="weather-header">
+            <span class="city-name" id="city-name"></span>
+          </div>
+          <div class="weather-main">
+            <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
+            <span class="temperature" id="temperature"></span>
+          </div>
+          <div class="weather-desc" id="description"></div>
+          <div class="weather-details">
+            <div id="humidity"><span>Humidty</span>: <span></span></div>
+            <div id="pressure"><span>Pressure</span>: <span></span></div>
+            <div id="wind"><span>Wind</span>: <span></span></div>
+            <div id="visibility">Visiblity<span></span>: <span></span></div>
+            <div id="sunrise"><span>Sunrise</span>: <span></span></div>
+            <div id="sunset"><span>Sunset</span>: <span></span></div>
+          </div>
+
+          <div class="loader-overlay hidden" id="loading">
+            <div class="loader-spinner"></div>
+            <br />
+            <span id="loading-message"></span>
+          </div>
+
+          <div class="error-overlay hidden" id="error-container">
+            <div class="error-box">
+              <button class="error-close" id="error-close">&times;</button>
+              <span class="error-icon">!</span>
+              <div class="error-title"></div>
+              <div class="error-message" id="error-message"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-    <script type="module" src="./app.js"></script>
   </body>
 </html>

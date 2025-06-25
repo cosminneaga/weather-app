@@ -12,15 +12,23 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background: linear-gradient(135deg, #5fd3f3 0%, #52c0ea 100%);
+    background-color: #5fd3f3;
 }
 
 .container {
     max-width: 700px;
     width: 95%;
     margin: 40px auto;
-    text-align: center;
     box-sizing: border-box;
+    color: white;
+    background: linear-gradient(135deg, #5fd3f3 0%, #52c0ea 100%);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.dark,
+body:has(div.dark) {
+    background: #1b1a1a;
 }
 
 .app-title {
@@ -34,7 +42,7 @@ body {
 .search-form {
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
+    margin: 20px 0;
     gap: 10px;
     flex-wrap: wrap;
 }
@@ -64,7 +72,7 @@ body {
     cursor: pointer;
     transition: background 0.2s;
     min-width: 90px;
-    margin-top: 10px;
+    /* margin-top: 10px; */
 }
 
 .search-btn:hover {
@@ -78,7 +86,6 @@ body {
     box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
-    align-items: center;
     box-sizing: border-box;
     position: relative;
     border-radius: 6px;
@@ -96,7 +103,6 @@ body {
 .weather-main {
     display: flex;
     align-items: center;
-    justify-content: center;
     margin-bottom: 8px;
     gap: 16px;
 }
@@ -118,7 +124,7 @@ body {
 
 .temperature {
     color: #fff;
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: bold;
 }
 
@@ -246,7 +252,7 @@ body {
     bottom: 0;
     width: 100%;
     height: 100%;
-    background: rgba(17, 14, 14, 0.808);
+    background: rgba(17, 14, 14, 1);
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -377,5 +383,48 @@ body {
         height: 38px;
         font-size: 1.5rem;
         line-height: 38px;
+    }
+}
+
+.custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    padding: 0.45em 2em 0.45em 0.75em;
+    font-size: 1.1em;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    cursor: pointer;
+    outline: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg fill="gray" height="20" width="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1em center;
+    background-size: 1.2em;
+    width: 100%;
+}
+.custom-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+}
+
+.wrapper {
+    display: flex;
+    gap: 5px;
+
+    .selectors {
+        width: 20%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .weather-card {
+        width: 80%;
     }
 }
