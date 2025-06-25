@@ -1,5 +1,5 @@
 export default class AppStore {
-  constructor(city, unit, lang, theme) {
+  constructor(city, unit, lang, theme, list = []) {
     const storage = JSON.parse(localStorage.getItem(this.constructor.name));
     if (storage) {
       this.city = storage.city;
@@ -14,14 +14,14 @@ export default class AppStore {
     this.unit = unit;
     this.lang = lang;
     this.theme = theme;
-    this.list = [];
+    this.list = list;
 
     const data = {
       city: this.city,
       unit: this.unit,
       lang: this.lang,
       theme: this.theme,
-      // list: this.list,
+      list: this.list,
     };
     console.log(data);
 
@@ -68,8 +68,20 @@ export default class AppStore {
     this._setToLocalStorage({ theme: theme });
   }
 
-  _setToLocalStorage({ city = this.city, unit = this.unit, lang = this.lang, theme = this.theme } = {}) {
-    localStorage.setItem(this.constructor.name, JSON.stringify({ city, unit, lang, theme }));
+  addToList(item) {
+    if (this.list.length > 30) this.list = [];
+    this.list.unshift(item);
+    this._setToLocalStorage(this.list);
+  }
+
+  _setToLocalStorage({
+    city = this.city,
+    unit = this.unit,
+    lang = this.lang,
+    theme = this.theme,
+    list = this.list,
+  } = {}) {
+    localStorage.setItem(this.constructor.name, JSON.stringify({ city, unit, lang, theme, list }));
   }
 
   getFromLocalStorage() {

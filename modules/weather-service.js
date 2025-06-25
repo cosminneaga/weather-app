@@ -1,8 +1,13 @@
 import { isValidCity } from "../modules/utils.js";
 import { MOCK_DATA, CONFIG } from "../modules/config.js";
 import ErrorHandler from "./error-handler.js";
+import AppStore from "./stores/index.js";
 
-export default class WeatherService {
+export default class WeatherService extends AppStore {
+  constructor() {
+    super();
+  }
+
   /**
    * Retrieves the current weather data for a specified city.
    * If the request fails, returns fallback mock data with error details.
@@ -19,10 +24,21 @@ export default class WeatherService {
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
       }
+      const json = await request.json();
+      this.addToList({
+        type: "REQUEST",
+        handler: "getCurrentWeather",
+        data: json,
+      });
 
-      return await request.json();
+      return json;
     } catch (error) {
       console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
+      this.addToList({
+        type: "ERROR",
+        handler: "getCurrentWeather",
+        data: { message: error.message },
+      });
 
       return {
         ...MOCK_DATA,
