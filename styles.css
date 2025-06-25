@@ -428,3 +428,26 @@ body:has(div.dark) {
         width: 80%;
     }
 }
+
+.search-history-container {
+    padding: 5px;
+    border: 1px solid white;
+    ul {
+        padding-left: 25px;
+        list-style-type: decimal;
+        li {
+            margin: 5px 0;
+            font-size: large;
+            font-weight: bolder;
+        }
+        button {
+            padding: 1px 6px;
+            background: red;
+            outline: none;
+            border: 1px solid red;
+            color: white;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    }
+}

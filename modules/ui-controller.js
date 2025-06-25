@@ -47,6 +47,10 @@ const elements = {
       select: document.querySelector("#selector-theme"),
     },
   },
+  searchHistoryList: {
+    list: document.querySelector("#weather-search-history-list"),
+    deleteBtns: document.querySelectorAll("#search-history-delete-item"),
+  },
 };
 
 export const setupEventListeners = () => {
@@ -76,6 +80,12 @@ export const setupEventListeners = () => {
     appStore.setTheme(event.target.value);
     setTheme();
   });
+
+  elements.searchHistoryList.deleteBtns.forEach((el, index) => {
+    el.addEventListener("click", (event) => {
+      console.log(event, index);
+    });
+  });
 };
 
 export const setupSelectorDefaults = () => {
@@ -98,6 +108,7 @@ export const handleSearch = async () => {
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
     displayWeather(cityWeather);
     appStore.addToListCitiesHistory(cityWeather);
+    displaySearchHistory(appStore.getList());
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);
@@ -194,4 +205,25 @@ const getCityInput = () => {
 
 const clearCityInput = () => {
   elements.cityInput.value = "";
+};
+
+const displaySearchHistory = (data) => {
+  data.forEach((item) => {
+    const li = document.createElement("li");
+    li.setAttribute("v-data", JSON.stringify(item));
+    li.textContent = item?.name + " ";
+
+    const button = document.createElement("button");
+    button.id = "search-history-delete-item";
+    button.textContent = "X";
+
+    li.appendChild(button);
+    elements.searchHistoryList.list.appendChild(li);
+
+    elements.searchHistoryList.deleteBtns.forEach((el, index) => {
+      el.addEventListener("click", (event) => {
+        console.log(event, index);
+      });
+    });
+  });
 };

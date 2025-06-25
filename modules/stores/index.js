@@ -48,6 +48,10 @@ export default class AppStore {
     return this.theme;
   }
 
+  getList() {
+    return this.list;
+  }
+
   setCity(city) {
     this.city = city;
     this._setToLocalStorage({ city: city });
