@@ -97,6 +97,7 @@ export const handleSearch = async () => {
     const cityWeather = await weatherService.getCurrentWeather(city, language, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
     displayWeather(cityWeather);
+    appStore.addToListCitiesHistory(cityWeather);
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);

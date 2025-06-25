@@ -74,6 +74,15 @@ export default class AppStore {
     this._setToLocalStorage(this.list);
   }
 
+  addToListCitiesHistory(city) {
+    const cityFound = this.list.find((item) => item?.name === city?.name);
+    if (cityFound) {
+      return;
+    }
+
+    this.addToList(city);
+  }
+
   _setToLocalStorage({
     city = this.city,
     unit = this.unit,
