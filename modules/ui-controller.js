@@ -1,4 +1,4 @@
-import WeatherService, * as service from "../modules/weather-service.js";
+import WeatherService from "../modules/weather-service.js";
 import {
   convertDateUnixToLocaleTime,
   convertVisibilityLength,
@@ -134,6 +134,7 @@ export const hideError = () => {
 
 export const displayWeather = async (city_weather) => {
   const appStore = new AppStore();
+  const weatherService = new WeatherService();
   const {
     name,
     weather,
@@ -144,7 +145,7 @@ export const displayWeather = async (city_weather) => {
   } = city_weather;
 
   elements.cityName.textContent = name;
-  elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
+  elements.icon.src = weatherService._buildIconUrl(weather[0].icon);
   elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(appStore.getUnit())}`;
   elements.description.textContent = weather.map((item) => item.description).join(", ");
   elements.humidity.children[1].textContent = `${humidity}%`;

@@ -21,7 +21,7 @@ export default class WeatherService extends AppStore {
     try {
       if (!isValidCity(city)) new ErrorHandler("CITY_INVALID").throw();
 
-      const request = await fetch(WeatherService._buildWeatherUrl("weather", { q: city, lang: lang, units: unit }));
+      const request = await fetch(this._buildWeatherUrl("weather", { q: city, lang: lang, units: unit }));
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
       }
@@ -62,7 +62,7 @@ export default class WeatherService extends AppStore {
   async getWeatherByCoords(latitude, longitude, lang, unit) {
     try {
       const request = await fetch(
-        WeatherService._buildWeatherUrl("weather", { lat: latitude, lon: longitude, lang: lang, unit: unit })
+        this._buildWeatherUrl("weather", { lat: latitude, lon: longitude, lang: lang, unit: unit })
       );
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
@@ -95,19 +95,15 @@ export default class WeatherService extends AppStore {
    * Builds a weather API URL with the specified endpoint and query parameters.
    *
    * @private
-   * @static
    * @param {string} endpoint - The API endpoint to append to the base URL.
    * @param {Object} [params={}] - Additional query parameters to include in the URL.
    * @param {string} [params.city] - The city name to query; must be valid or an error is thrown.
    * @returns {string} The fully constructed URL as a string.
    * @throws {Error} If the provided city parameter is invalid.
    */
-  static _buildWeatherUrl(endpoint, params = {}) {
+  _buildWeatherUrl(endpoint, params = {}) {
     const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);
-
     url.searchParams.set("appid", CONFIG.API_KEY);
-    url.searchParams.set("units", CONFIG.DEFAULT_UNIT);
-    url.searchParams.set("lang", CONFIG.DEFAULT_LANG);
 
     Object.entries(params).forEach(([key, value]) => {
       if (key === "city" && !isValidCity(value)) new ErrorHandler("CITY_INVALID").throw();
@@ -121,11 +117,10 @@ export default class WeatherService extends AppStore {
    * Builds the full URL for a weather icon image based on the provided icon name.
    *
    * @private
-   * @static
    * @param {string} icon_name - The name of the weather icon.
    * @returns {string} The complete URL to the weather icon image.
    */
-  static _buildIconUrl(icon_name) {
+  _buildIconUrl(icon_name) {
     const url = new URL(`${CONFIG.ICON_BASE_URL}/${icon_name}@2x.png`);
 
     return url.toString();
