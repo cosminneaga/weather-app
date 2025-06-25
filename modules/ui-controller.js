@@ -79,11 +79,10 @@ export const setupEventListeners = () => {
   });
 };
 
-export const setupSelectorDefaults = () => {
-  const appStore = new AppStore();
-  elements.selector.language.select.value = appStore.getLang();
-  elements.selector.temperature.select.value = appStore.getUnit();
-  elements.selector.theme.select.value = appStore.getTheme();
+export const setupSelectors = (lang, unit, theme) => {
+  elements.selector.language.select.value = lang;
+  elements.selector.temperature.select.value = unit;
+  elements.selector.theme.select.value = theme;
 };
 
 export const handleSearch = async () => {
@@ -95,8 +94,12 @@ export const handleSearch = async () => {
 
   try {
     const weatherService = new WeatherService();
-    const cityWeather = await weatherService.getCurrentWeather(city, language, unit);
+
+    const cityWithoutDiacritics = city.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const cityWeather = await weatherService.getCurrentWeather(cityWithoutDiacritics, language, unit);
+
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
+
     displayWeather(cityWeather);
     appStore.addToListCitiesHistory(cityWeather);
     displaySearchHistoryAndSetupEvents(appStore.getList());

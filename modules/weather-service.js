@@ -9,12 +9,13 @@ export default class WeatherService extends AppStore {
   }
 
   /**
-   * Retrieves the current weather data for a specified city.
-   * If the request fails, returns fallback mock data with error details.
+   * Fetches the current weather data for a specified city.
    *
    * @async
-   * @param {string} city - The name of the city to fetch weather data for.
-   * @returns {Promise<Object>} The weather data as a JSON object. If fallback is used, includes `isFallback` and `fallbackReason` properties.
+   * @param {string} city - The name of the city to fetch weather for.
+   * @param {string} lang - The language code for the response (e.g., 'en', 'ro').
+   * @param {string} unit - The unit system for temperature ('metric', 'imperial', etc.).
+   * @returns {Promise<Object>} The weather data as a JSON object. Returns fallback data with `isFallback: true` if an error occurs.
    */
   async getCurrentWeather(city, lang, unit) {
     try {
@@ -48,8 +49,46 @@ export default class WeatherService extends AppStore {
     }
   }
 
-  async getWeatherByCoords(latitude, longitude) {
-    // Similar, dar pentru coordonate
+  /**
+   * Fetches weather data based on geographic coordinates.
+   *
+   * @async
+   * @param {number} latitude - The latitude of the location.
+   * @param {number} longitude - The longitude of the location.
+   * @param {string} lang - The language code for the response (e.g., 'en', 'ro').
+   * @param {string} unit - The unit system for temperature (e.g., 'metric', 'imperial').
+   * @returns {Promise<Object>} The weather data as a JSON object. If an error occurs, returns fallback mock data with error details.
+   */
+  async getWeatherByCoords(latitude, longitude, lang, unit) {
+    try {
+      const request = await fetch(
+        WeatherService._buildWeatherUrl("weather", { lat: latitude, lon: longitude, lang: lang, unit: unit })
+      );
+      if (!request.ok) {
+        new ErrorHandler(request.status).throw();
+      }
+      const json = await request.json();
+      this.addToList({
+        type: "REQUEST",
+        handler: "getWeatherByCoords",
+        data: json,
+      });
+
+      return json;
+    } catch (error) {
+      console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
+      this.addToList({
+        type: "ERROR",
+        handler: "getWeatherByCoords",
+        data: { message: error.message },
+      });
+
+      return {
+        ...MOCK_DATA,
+        isFallback: true,
+        fallbackReason: error.message,
+      };
+    }
   }
 
   /**
