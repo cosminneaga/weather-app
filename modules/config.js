@@ -1,5 +1,3 @@
-// Cum arată datele unei API meteo?
-// Temperatură, umiditate, vânt, descriere...
 export const MOCK_DATA = {
   coord: {
     lon: 10.99,
@@ -54,8 +52,6 @@ export const CONFIG = {
   API_KEY: "de99069cbd2c774fc89fd542da802b06",
   API_BASE_URL: "https://api.openweathermap.org/data/2.5",
   ICON_BASE_URL: "https://openweathermap.org/img/wn",
-  DEFAULT_UNIT: "metric",
-  DEFAULT_LANG: "ro",
 };
 
 export const API_ENDPOINTS = {

@@ -3,7 +3,6 @@ import {
   convertDateUnixToLocaleTime,
   convertVisibilityLength,
   convertWindSpeedInKm,
-  isValidCity,
   getTemperatureSymbol,
   getWindSpeedSuffix,
 } from "../modules/utils.js";
