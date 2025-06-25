@@ -47,10 +47,7 @@ const elements = {
       select: document.querySelector("#selector-theme"),
     },
   },
-  searchHistoryList: {
-    list: document.querySelector("#weather-search-history-list"),
-    deleteBtns: document.querySelectorAll("#search-history-delete-item"),
-  },
+  searchHistoryList: document.querySelector("#weather-search-history-list"),
 };
 
 export const setupEventListeners = () => {
@@ -80,12 +77,6 @@ export const setupEventListeners = () => {
     appStore.setTheme(event.target.value);
     setTheme();
   });
-
-  elements.searchHistoryList.deleteBtns.forEach((el, index) => {
-    el.addEventListener("click", (event) => {
-      console.log(event, index);
-    });
-  });
 };
 
 export const setupSelectorDefaults = () => {
@@ -108,7 +99,7 @@ export const handleSearch = async () => {
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
     displayWeather(cityWeather);
     appStore.addToListCitiesHistory(cityWeather);
-    displaySearchHistory(appStore.getList());
+    displaySearchHistoryAndSetupEvents(appStore.getList());
     clearCityInput();
   } catch (error) {
     const json = JSON.parse(error.message);
@@ -207,23 +198,24 @@ const clearCityInput = () => {
   elements.cityInput.value = "";
 };
 
-const displaySearchHistory = (data) => {
+const displaySearchHistoryAndSetupEvents = (data) => {
+  const appStore = new AppStore();
+  elements.searchHistoryList.innerHTML = "";
   data.forEach((item) => {
     const li = document.createElement("li");
-    li.setAttribute("v-data", JSON.stringify(item));
+    li.setAttribute("data-city", JSON.stringify(item));
     li.textContent = item?.name + " ";
 
     const button = document.createElement("button");
     button.id = "search-history-delete-item";
     button.textContent = "X";
-
-    li.appendChild(button);
-    elements.searchHistoryList.list.appendChild(li);
-
-    elements.searchHistoryList.deleteBtns.forEach((el, index) => {
-      el.addEventListener("click", (event) => {
-        console.log(event, index);
-      });
+    button.addEventListener("click", function (event) {
+      const city_name = JSON.parse(li.dataset.city).name;
+      appStore.removeCityFromListByName(city_name);
+      li.remove();
     });
+    li.appendChild(button);
+    elements.searchHistoryList.appendChild(li);
+    setupEventListeners();
   });
 };

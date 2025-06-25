@@ -87,6 +87,16 @@ export default class AppStore {
     this.addToList(city);
   }
 
+  removeCityFromListByName(city_name) {
+    const cityFound = this.list.find((item) => item.name === city_name);
+    if (!cityFound) {
+      return;
+    }
+    const index = this.list.indexOf(cityFound);
+    this.list.splice(index, 1);
+    this._setToLocalStorage({ list: this.list });
+  }
+
   _setToLocalStorage({
     city = this.city,
     unit = this.unit,
