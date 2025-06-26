@@ -1,83 +1,67 @@
-export default class AppStore {
+import Storage from "../storage.js";
+
+export default class AppStore extends Storage {
   constructor(city, unit, lang, theme, list = []) {
-    const storage = JSON.parse(localStorage.getItem(this.constructor.name));
-    if (storage) {
-      this.city = storage.city;
-      this.unit = storage.unit;
-      this.lang = storage.lang;
-      this.theme = storage.theme;
-      this.list = storage.list;
-      return;
-    }
-
-    this.city = city;
-    this.unit = unit;
-    this.lang = lang;
-    this.theme = theme;
-    this.list = list;
-
-    const data = {
-      city: this.city,
-      unit: this.unit,
-      lang: this.lang,
-      theme: this.theme,
-      list: this.list,
-    };
-    localStorage.setItem(this.constructor.name, JSON.stringify(data));
+    super({
+      city: city,
+      unit: unit,
+      lang: lang,
+      theme: theme,
+      list: list,
+    });
   }
 
   getAll() {
-    return this;
+    return this.data;
   }
 
   getCity() {
-    return this.city;
+    return this.data.city;
   }
 
   getUnit() {
-    return this.unit;
+    return this.data.unit;
   }
 
   getLang() {
-    return this.lang;
+    return this.data.lang;
   }
 
   getTheme() {
-    return this.theme;
+    return this.data.theme;
   }
 
   getList() {
-    return this.list;
+    return this.data.list;
   }
 
   setCity(city) {
-    this.city = city;
-    this._setToLocalStorage({ city: city });
+    this.data.city = city;
+    this.set({ city: city });
   }
 
   setUnit(unit) {
-    this.unit = unit;
-    this._setToLocalStorage({ unit: unit });
+    this.data.unit = unit;
+    this.set({ unit: unit });
   }
 
   setLang(lang) {
-    this.lang = lang;
-    this._setToLocalStorage({ lang: lang });
+    this.data.lang = lang;
+    this.set({ lang: lang });
   }
 
   setTheme(theme) {
-    this.theme = theme;
-    this._setToLocalStorage({ theme: theme });
+    this.data.theme = theme;
+    this.set({ theme: theme });
   }
 
-  addToList(item) {
-    if (this.list.length > 30) this.list = [];
-    this.list.unshift(item);
-    this._setToLocalStorage(this.list);
+  addToList(data, name = "list") {
+    if (this.data.list.length > 30) this.data.list = [];
+    this.unshift(data, name);
   }
 
   addToListCitiesHistory(city) {
-    const cityFound = this.list.find((item) => item?.name === city?.name);
+    const cityFound = this.data.list.find((item) => item?.name === city?.name);
     if (cityFound) {
       return;
     }
@@ -86,26 +70,12 @@ export default class AppStore {
   }
 
   removeCityFromListByName(city_name) {
-    const cityFound = this.list.find((item) => item.name === city_name);
+    const cityFound = this.data.list.find((item) => item.name === city_name);
     if (!cityFound) {
       return;
     }
-    const index = this.list.indexOf(cityFound);
+    const index = this.data.list.indexOf(cityFound);
     this.list.splice(index, 1);
     this._setToLocalStorage({ list: this.list });
-  }
-
-  _setToLocalStorage({
-    city = this.city,
-    unit = this.unit,
-    lang = this.lang,
-    theme = this.theme,
-    list = this.list,
-  } = {}) {
-    localStorage.setItem(this.constructor.name, JSON.stringify({ city, unit, lang, theme, list }));
-  }
-
-  getFromLocalStorage() {
-    return JSON.parse(localStorage.getItem(this.constructor.name));
   }
 }
