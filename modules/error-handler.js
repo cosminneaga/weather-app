@@ -1,10 +1,16 @@
+import Storage from "./storage.js";
 import AppStore from "./stores/index.js";
 
-export default class ErrorHandler {
+export default class ErrorHandler extends Storage {
   constructor(value) {
-    this.value = value;
+    super({
+      list: [],
+    });
+
     const appStore = new AppStore();
-    this.language = appStore.getLang();
+
+    this.value = value;
+    this.language = appStore.getLang() || "ro";
     this.errors = [
       {
         name: "CITY_INVALID",
@@ -88,6 +94,8 @@ export default class ErrorHandler {
 
   throw() {
     const error = this.get();
+    this.setItem(error, "list");
+
     throw new Error(error.message);
   }
 }

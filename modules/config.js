@@ -55,8 +55,13 @@ export const CONFIG = {
 };
 
 export const API_ENDPOINTS = {
-  CURRENT_WEATHER: "",
-  FORECAST: "",
+  WEATHER: "weather",
+  FORECAST: {
+    HOURLY: "forecast/hourly",
+    DAILY: "forecast/daily",
+    CLIMATIC: "forecast/climate",
+    BASE: "forecast",
+  },
 };
 
 export const TRANSLATION = {
@@ -97,6 +102,4 @@ export const TRANSLATION = {
     loading: "Loading weather data...",
   },
 };
-export const getTranslation = (lang) => {
-  return TRANSLATION[lang];
-};
+export const getTranslation = (lang) => TRANSLATION[lang];

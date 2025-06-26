@@ -1,4 +1,4 @@
-import WeatherService, * as service from "../modules/weather-service.js";
+import WeatherService from "../modules/weather-service.js";
 import {
   convertDateUnixToLocaleTime,
   convertVisibilityLength,
@@ -9,6 +9,7 @@ import {
 import { getTranslation } from "../modules/config.js";
 import ErrorHandler from "./error-handler.js";
 import AppStore from "./stores/index.js";
+const weatherService = new WeatherService();
 
 const elements = {
   app: document.querySelector("#app"),
@@ -55,7 +56,7 @@ export const setupEventListeners = () => {
   elements.searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     appStore.setCity(getCityInput().trim());
-    await handleSearch();
+    await handleSearch(appStore);
   });
 
   elements.error.closeBtn.addEventListener("click", () => {
@@ -65,17 +66,17 @@ export const setupEventListeners = () => {
 
   elements.selector.language.select.addEventListener("change", async (event) => {
     appStore.setLang(event.target.value);
-    await handleSearch();
+    await handleSearch(appStore);
   });
 
   elements.selector.temperature.select.addEventListener("change", async (event) => {
     appStore.setUnit(event.target.value);
-    await handleSearch();
+    await handleSearch(appStore);
   });
 
   elements.selector.theme.select.addEventListener("change", (event) => {
     appStore.setTheme(event.target.value);
-    setTheme();
+    setTheme(appStore.getTheme());
   });
 };
 
@@ -85,30 +86,27 @@ export const setupSelectors = (lang, unit, theme) => {
   elements.selector.theme.select.value = theme;
 };
 
-export const handleSearch = async () => {
+export const handleSearch = async (data) => {
+  console.log(data);
+  const { city, lang, unit, list } = data.data;
   showLoading();
-  const appStore = new AppStore();
-  const city = appStore.getCity();
-  const language = appStore.getLang();
-  const unit = appStore.getUnit();
-
   try {
-    const weatherService = new WeatherService();
-
-    const cityWithoutDiacritics = city.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const cityWeather = await weatherService.getCurrentWeather(cityWithoutDiacritics, language, unit);
-
+    const cityWeather = await weatherService.getCurrentWeather(city, lang, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
 
-    displayWeather(cityWeather);
-    appStore.addToListCitiesHistory(cityWeather);
-    displaySearchHistoryAndSetupEvents(appStore.getList());
+    displayWeather(cityWeather, unit, lang, weatherService.getSearched());
     clearCityInput();
   } catch (error) {
-    const json = JSON.parse(error.message);
-    displayWeather(json);
+    console.warn("ERROR handleSearch:", error.message);
     const handler = new ErrorHandler("DISPLAY_WEATHER").get();
-    showError(`"${json.fallbackReason}" ${handler.message}`);
+
+    if (error instanceof TypeError || error instanceof ReferenceError) {
+      showError(`"${error.message}" ${handler.message}`);
+    } else {
+      const json = JSON.parse(error.message);
+      displayWeather(json, unit, lang, weatherService.getSearched());
+      showError(`"${json.fallbackReason}" ${handler.message}`);
+    }
   }
 
   hideLoading();
@@ -132,8 +130,7 @@ export const hideError = () => {
   elements.error.message.textContent = "";
 };
 
-export const displayWeather = async (city_weather) => {
-  const appStore = new AppStore();
+export const displayWeather = async (city_weather, unit, lang, history) => {
   const {
     name,
     weather,
@@ -144,17 +141,18 @@ export const displayWeather = async (city_weather) => {
   } = city_weather;
 
   elements.cityName.textContent = name;
-  elements.icon.src = WeatherService._buildIconUrl(weather[0].icon);
-  elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(appStore.getUnit())}`;
+  elements.icon.src = weatherService._buildIconUrl(weather[0].icon);
+  elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(unit)}`;
   elements.description.textContent = weather.map((item) => item.description).join(", ");
   elements.humidity.children[1].textContent = `${humidity}%`;
   elements.pressure.children[1].textContent = `${pressure} hPa`;
-  elements.wind.children[1].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(appStore.getUnit())}`;
+  elements.wind.children[1].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(unit)}`;
   elements.visibility.children[1].textContent = `${convertVisibilityLength(visibility)}`;
   elements.sunrise.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunrise)}`;
   elements.sunset.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
 
-  displayTranslation(appStore.getLang());
+  displayTranslation(lang);
+  displaySearchHistoryAndSetupEvents(history);
 };
 
 const displayTranslation = (language) => {
@@ -188,9 +186,8 @@ const displayTranslation = (language) => {
   elements.loadingMessage.textContent = loading;
 };
 
-export const setTheme = () => {
-  const appStore = new AppStore();
-  elements.app.className = `container ${appStore.getTheme()}`;
+export const setTheme = (theme) => {
+  elements.app.className = `container ${theme}`;
 };
 
 const getCityInput = () => {
@@ -202,7 +199,6 @@ const clearCityInput = () => {
 };
 
 const displaySearchHistoryAndSetupEvents = (data) => {
-  const appStore = new AppStore();
   elements.searchHistoryList.innerHTML = "";
   data.forEach((item) => {
     const li = document.createElement("li");

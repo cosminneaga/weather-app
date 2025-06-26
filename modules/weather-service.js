@@ -1,11 +1,15 @@
 import { isValidCity } from "../modules/utils.js";
-import { MOCK_DATA, CONFIG } from "../modules/config.js";
+import { MOCK_DATA, CONFIG, API_ENDPOINTS } from "../modules/config.js";
 import ErrorHandler from "./error-handler.js";
-import AppStore from "./stores/index.js";
+import Storage from "./storage.js";
 
-export default class WeatherService extends AppStore {
+export default class WeatherService extends Storage {
   constructor() {
-    super();
+    super({
+      searched: [],
+      favourites: [],
+      errors: [],
+    });
   }
 
   /**
@@ -19,27 +23,25 @@ export default class WeatherService extends AppStore {
    */
   async getCurrentWeather(city, lang, unit) {
     try {
-      if (!isValidCity(city)) new ErrorHandler("CITY_INVALID").throw();
+      const cityWithoutDiacritics = city.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler("CITY_INVALID").throw();
 
-      const request = await fetch(WeatherService._buildWeatherUrl("weather", { q: city, lang: lang, units: unit }));
+      const request = await fetch(
+        this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
+      );
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      this.addToList({
-        type: "REQUEST",
-        handler: "getCurrentWeather",
-        data: json,
-      });
+      const exists = this.contains(json, "searched", "name");
+      if (!exists) {
+        this.unshift(json, "searched");
+      }
 
       return json;
     } catch (error) {
       console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
-      this.addToList({
-        type: "ERROR",
-        handler: "getCurrentWeather",
-        data: { message: error.message },
-      });
+      this.unshift({ message: error.message }, "errors");
 
       return {
         ...MOCK_DATA,
@@ -62,26 +64,21 @@ export default class WeatherService extends AppStore {
   async getWeatherByCoords(latitude, longitude, lang, unit) {
     try {
       const request = await fetch(
-        WeatherService._buildWeatherUrl("weather", { lat: latitude, lon: longitude, lang: lang, unit: unit })
+        this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { lat: latitude, lon: longitude, lang: lang, units: unit })
       );
       if (!request.ok) {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      this.addToList({
-        type: "REQUEST",
-        handler: "getWeatherByCoords",
-        data: json,
-      });
+      const exists = this.contains(json, "searched", "name");
+      if (!exists) {
+        this.unshift(json, "searched");
+      }
 
       return json;
     } catch (error) {
       console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
-      this.addToList({
-        type: "ERROR",
-        handler: "getWeatherByCoords",
-        data: { message: error.message },
-      });
+      this.unshift({ message: error.message }, "errors");
 
       return {
         ...MOCK_DATA,
@@ -95,22 +92,17 @@ export default class WeatherService extends AppStore {
    * Builds a weather API URL with the specified endpoint and query parameters.
    *
    * @private
-   * @static
    * @param {string} endpoint - The API endpoint to append to the base URL.
    * @param {Object} [params={}] - Additional query parameters to include in the URL.
    * @param {string} [params.city] - The city name to query; must be valid or an error is thrown.
    * @returns {string} The fully constructed URL as a string.
    * @throws {Error} If the provided city parameter is invalid.
    */
-  static _buildWeatherUrl(endpoint, params = {}) {
+  _buildWeatherUrl(endpoint, params = {}) {
     const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);
-
     url.searchParams.set("appid", CONFIG.API_KEY);
-    url.searchParams.set("units", CONFIG.DEFAULT_UNIT);
-    url.searchParams.set("lang", CONFIG.DEFAULT_LANG);
 
     Object.entries(params).forEach(([key, value]) => {
-      if (key === "city" && !isValidCity(value)) new ErrorHandler("CITY_INVALID").throw();
       url.searchParams.set(key, value);
     });
 
@@ -121,13 +113,16 @@ export default class WeatherService extends AppStore {
    * Builds the full URL for a weather icon image based on the provided icon name.
    *
    * @private
-   * @static
    * @param {string} icon_name - The name of the weather icon.
    * @returns {string} The complete URL to the weather icon image.
    */
-  static _buildIconUrl(icon_name) {
+  _buildIconUrl(icon_name) {
     const url = new URL(`${CONFIG.ICON_BASE_URL}/${icon_name}@2x.png`);
 
     return url.toString();
+  }
+
+  getSearched() {
+    return this.getItem("searched");
   }
 }
