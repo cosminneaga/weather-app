@@ -87,7 +87,6 @@ export const setupSelectors = (lang, unit, theme) => {
 };
 
 export const handleSearch = async (data) => {
-  console.log(data);
   const { city, lang, unit, list } = data.data;
   showLoading();
   try {
@@ -97,7 +96,6 @@ export const handleSearch = async (data) => {
     displayWeather(cityWeather, unit, lang, weatherService.getSearched());
     clearCityInput();
   } catch (error) {
-    console.warn("ERROR handleSearch:", error.message);
     const handler = new ErrorHandler("DISPLAY_WEATHER").get();
 
     if (error instanceof TypeError || error instanceof ReferenceError) {

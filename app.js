@@ -8,7 +8,6 @@ import { getCoords } from "./modules/location-service.js";
   let city,
     appStore = null;
   const weatherService = new WeatherService();
-  console.log(localStorage.getItem("AppStore"));
   if (!localStorage.getItem("AppStore")) {
     const coords = await getCoords();
     city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, "ro", "metric");
@@ -17,10 +16,6 @@ import { getCoords } from "./modules/location-service.js";
     appStore = new AppStore();
     city = await weatherService.getCurrentWeather(appStore.getCity(), appStore.getLang(), appStore.getUnit());
   }
-  /**
-   * ATM we fetch the city always from gps coordinates on render
-   * we should update the rendering city from AppStore history instead
-   */
 
   ui.setupEventListeners();
   ui.displayWeather(city, appStore.getUnit(), appStore.getLang(), weatherService.getSearched());
