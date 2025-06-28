@@ -33,6 +33,28 @@ export default class Storage {
   }
 
   /**
+   * Removes the first element from the array stored under the given name in the data object,
+   * updates the data, and persists the change.
+   *
+   * @param {string} name - The key of the array in the data object to shift.
+   */
+  shift(name) {
+    this.data[name].shift();
+    this.set({ [name]: this.data[name] });
+  }
+
+  /**
+   * Removes the last element from the array stored under the specified name in the data object,
+   * then updates the storage with the modified array.
+   *
+   * @param {string} name - The key of the array in the data object to pop an element from.
+   */
+  pop(name) {
+    this.data[name].pop();
+    this.set({ [name]: this.data[name] })
+  }
+
+  /**
    * Checks if an item with a matching property value exists in the specified collection.
    *
    * @param {Object} data - The object containing the property to match.
