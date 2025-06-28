@@ -1,17 +1,17 @@
-import * as ui from "./modules/ui-controller.js";
-import AppStore from "./modules/stores/index.js";
-import WeatherService from "./modules/weather-service.js";
-import ErrorHandler from "./modules/error-handler.js";
-import { getCoords } from "./modules/location-service.js";
+import * as ui from './modules/ui-controller.js';
+import AppStore from './modules/stores/index.js';
+import WeatherService from './modules/weather-service.js';
+import ErrorHandler from './modules/error-handler.js';
+import { getCoords } from './modules/location-service.js';
 
 (async function init() {
   let city,
     appStore = null;
   const weatherService = new WeatherService();
-  if (!localStorage.getItem("AppStore")) {
+  if (!localStorage.getItem('AppStore')) {
     const coords = await getCoords();
-    city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, "ro", "metric");
-    appStore = new AppStore(city.name, "metric", "ro", "light");
+    city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, 'ro', 'metric');
+    appStore = new AppStore(city.name, 'metric', 'ro', 'light');
   } else {
     appStore = new AppStore();
     city = await weatherService.getCurrentWeather(appStore.getCity(), appStore.getLang(), appStore.getUnit());

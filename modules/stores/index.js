@@ -1,4 +1,4 @@
-import Storage from "../storage.js";
+import Storage from '../storage.js';
 
 export default class AppStore extends Storage {
   constructor(city, unit, lang, theme, list = []) {
@@ -55,7 +55,7 @@ export default class AppStore extends Storage {
     this.set({ theme: theme });
   }
 
-  addToList(data, name = "list") {
+  addToList(data, name = 'list') {
     if (this.data.list.length > 30) this.data.list = [];
     this.unshift(data, name);
   }

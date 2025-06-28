@@ -6,21 +6,21 @@ export const getCoords = () =>
       try {
         // Ce API public oferă locația bazată pe IP?
         // Hint: încearcă <https://ipapi.co/json/> - este gratuit și nu necesită API key
-        const response = await fetch("https://ipapi.co/json");
+        const response = await fetch('https://ipapi.co/json');
         const data = await response.json();
-        console.log("ip", data);
+        console.log('ip', data);
 
         // Ce proprietăți returnează pentru coordonate?
         // Hint: verifică în browser console ce structură are răspunsul
         resolve({
           latitude: data.latitude,
           longitude: data.longitude,
-          source: "ip",
-          accuracy: "city", // IP location e mai puțin precisă
+          source: 'ip',
+          accuracy: 'city', // IP location e mai puțin precisă
         });
       } catch (error) {
         // Ce faci când nici IP location nu funcționează?
-        reject(new Error("Nu am putut determina locația"));
+        reject(new Error('Nu am putut determina locația'));
       }
     };
 
@@ -33,12 +33,12 @@ export const getCoords = () =>
     navigator.geolocation.getCurrentPosition(
       (position) => {
         // Cum extragi coordonatele din position?
-        console.log("position", position);
+        console.log('position', position);
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          source: "gps",
-          accuracy: "precise",
+          source: 'gps',
+          accuracy: 'precise',
         });
       },
       (error) => {
@@ -46,7 +46,7 @@ export const getCoords = () =>
         // PERMISSION_DENIED = ?
         // POSITION_UNAVAILABLE = ?
         // TIMEOUT = ?
-        console.warn("Geolocation failed:", error.message);
+        console.warn('Geolocation failed:', error.message);
         fallbackToIp();
       },
       {

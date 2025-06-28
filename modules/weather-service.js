@@ -1,7 +1,7 @@
-import { isValidCity } from "../modules/utils.js";
-import { MOCK_DATA, CONFIG, API_ENDPOINTS } from "../modules/config.js";
-import ErrorHandler from "./error-handler.js";
-import Storage from "./storage.js";
+import { isValidCity } from '../modules/utils.js';
+import { MOCK_DATA, CONFIG, API_ENDPOINTS } from '../modules/config.js';
+import ErrorHandler from './error-handler.js';
+import Storage from './storage.js';
 
 export default class WeatherService extends Storage {
   constructor() {
@@ -23,8 +23,8 @@ export default class WeatherService extends Storage {
    */
   async getCurrentWeather(city, lang, unit) {
     try {
-      const cityWithoutDiacritics = city.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler("CITY_INVALID").throw();
+      const cityWithoutDiacritics = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler('CITY_INVALID').throw();
 
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
@@ -33,15 +33,15 @@ export default class WeatherService extends Storage {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      const exists = this.contains(json, "searched", "name");
+      const exists = this.contains(json, 'searched', 'name');
       if (!exists) {
-        this.unshift(json, "searched");
+        this.unshift(json, 'searched');
       }
 
       return json;
     } catch (error) {
-      console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
-      this.unshift({ message: error.message }, "errors");
+      console.warn('Date generice au fost afisate cauzate de eroare la apelare API:', error.message);
+      this.unshift({ message: error.message }, 'errors');
 
       return {
         ...MOCK_DATA,
@@ -70,15 +70,15 @@ export default class WeatherService extends Storage {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      const exists = this.contains(json, "searched", "name");
+      const exists = this.contains(json, 'searched', 'name');
       if (!exists) {
-        this.unshift(json, "searched");
+        this.unshift(json, 'searched');
       }
 
       return json;
     } catch (error) {
-      console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
-      this.unshift({ message: error.message }, "errors");
+      console.warn('Date generice au fost afisate cauzate de eroare la apelare API:', error.message);
+      this.unshift({ message: error.message }, 'errors');
 
       return {
         ...MOCK_DATA,
@@ -100,7 +100,7 @@ export default class WeatherService extends Storage {
    */
   _buildWeatherUrl(endpoint, params = {}) {
     const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);
-    url.searchParams.set("appid", CONFIG.API_KEY);
+    url.searchParams.set('appid', CONFIG.API_KEY);
 
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value);
@@ -123,6 +123,6 @@ export default class WeatherService extends Storage {
   }
 
   getSearched() {
-    return this.getItem("searched");
+    return this.getItem('searched');
   }
 }

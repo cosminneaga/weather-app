@@ -1,5 +1,5 @@
-import Storage from "./storage.js";
-import AppStore from "./stores/index.js";
+import Storage from './storage.js';
+import AppStore from './stores/index.js';
 
 export default class ErrorHandler extends Storage {
   constructor(value) {
@@ -10,78 +10,78 @@ export default class ErrorHandler extends Storage {
     const appStore = new AppStore();
 
     this.value = value;
-    this.language = appStore.getLang() || "ro";
+    this.language = appStore.getLang() || 'ro';
     this.errors = [
       {
-        name: "CITY_INVALID",
+        name: 'CITY_INVALID',
         code: null,
         message: {
-          ro: "Orasul nu e valid... Te rog introdu un oras valid.",
-          en: "The city is invalid... Please enter a valid city.",
+          ro: 'Orasul nu e valid... Te rog introdu un oras valid.',
+          en: 'The city is invalid... Please enter a valid city.',
         },
       },
       {
-        name: "CITY_NOT_FOUND",
+        name: 'CITY_NOT_FOUND',
         code: 404,
         message: {
-          ro: "Orasul nu a fost gasit... Reincerca sa accesezi datele pentru un alt oras.",
+          ro: 'Orasul nu a fost gasit... Reincerca sa accesezi datele pentru un alt oras.',
           en: "The city wasn't found... Retry to access the data of another city",
         },
       },
       {
-        name: "NETWORK",
+        name: 'NETWORK',
         code: null,
         message: {
-          ro: "A aparut o eroare de retea... Reincerca mai tarziu.",
-          en: "Netwrok error... Retry later.",
+          ro: 'A aparut o eroare de retea... Reincerca mai tarziu.',
+          en: 'Netwrok error... Retry later.',
         },
       },
       {
-        name: "AUTH",
+        name: 'AUTH',
         code: 401,
         message: {
-          ro: "Autentificare nereusita... Te rog incerca folosind alt token.",
-          en: "Authentication unsuccessful... Please try using another token.",
+          ro: 'Autentificare nereusita... Te rog incerca folosind alt token.',
+          en: 'Authentication unsuccessful... Please try using another token.',
         },
       },
       {
-        name: "SERVER",
+        name: 'SERVER',
         code: 500,
         message: {
-          ro: "A aparut o eroare la server... Te rog incearca mai tarziu.",
-          en: "A server error arised... Please try again later.",
+          ro: 'A aparut o eroare la server... Te rog incearca mai tarziu.',
+          en: 'A server error arised... Please try again later.',
         },
       },
       {
-        name: "GENERAL",
+        name: 'GENERAL',
         code: null,
         message: {
-          ro: "A aparut o eroare... Reincearca.",
-          en: "An error arised... Retry.",
+          ro: 'A aparut o eroare... Reincearca.',
+          en: 'An error arised... Retry.',
         },
       },
       {
-        name: "DISPLAY_WEATHER",
+        name: 'DISPLAY_WEATHER',
         code: null,
         message: {
-          ro: "Din cauza acestei erori un oras default va fi afisat.",
-          en: "Due to an error a default city will be displayed.",
+          ro: 'Din cauza acestei erori un oras default va fi afisat.',
+          en: 'Due to an error a default city will be displayed.',
         },
       },
     ];
   }
 
   get() {
-    let key = "";
+    let key = '';
     switch (typeof this.value) {
-      case "number":
-        key = "code";
+      case 'number':
+        key = 'code';
         break;
-      case "string":
-        key = "name";
+      case 'string':
+        key = 'name';
         break;
       default:
-        key = "code";
+        key = 'code';
         break;
     }
 
@@ -94,7 +94,7 @@ export default class ErrorHandler extends Storage {
 
   throw() {
     const error = this.get();
-    this.setItem(error, "list");
+    this.setItem(error, 'list');
 
     throw new Error(error.message);
   }

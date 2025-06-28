@@ -9,7 +9,7 @@ export const convertWindSpeedInKm = (speed) => {
 };
 
 export const convertDateUnixToLocaleTime = (timestamp) => {
-  return dayjs.unix(timestamp).format("HH:MM");
+  return dayjs.unix(timestamp).format('HH:MM');
 };
 
 export const convertVisibilityLength = (value) => {
@@ -25,31 +25,31 @@ export const convertTemperature = (value, unit) => {
   // [(78 - 32) * 5/9] 78 'F' = 25.5 C
 
   switch (unit) {
-    case "C":
+    case 'C':
       return `${((value * 9) / 5 + 32).toFixed(1)} °F`;
-    case "F":
+    case 'F':
       return `${(((value - 32) * 5) / 9).toFixed(1)} °C`;
   }
 };
 
 export const getTemperatureSymbol = (unit) => {
   switch (unit) {
-    case "standard":
-      return "°K";
-    case "metric":
-      return "°C";
-    case "imperial":
-      return "°F";
+    case 'standard':
+      return '°K';
+    case 'metric':
+      return '°C';
+    case 'imperial':
+      return '°F';
   }
 };
 
 export const getWindSpeedSuffix = (unit) => {
   switch (unit) {
-    case "standard":
-      return "m/s";
-    case "metric":
-      return "m/s";
-    case "imperial":
-      return "m/h";
+    case 'standard':
+      return 'm/s';
+    case 'metric':
+      return 'm/s';
+    case 'imperial':
+      return 'm/h';
   }
 };
