@@ -34,7 +34,6 @@ export default class Logger extends Storage {
  */
   debug(message, data = null) {
     if (this.enablingStages.debug.includes(this.level)) {
-        console.log('debug')
       this._log(this.level, message, data);
     }
   }
@@ -47,7 +46,6 @@ export default class Logger extends Storage {
  */
   info(message, data = null) {
     if (this.enablingStages.info.includes(this.level)) {
-        console.log('info')
       this._log(this.level, message, data);
     }
   }
@@ -60,7 +58,6 @@ export default class Logger extends Storage {
  */
   warn(message, data = null) {
     if (this.enablingStages.warn.includes(this.level)) {
-        console.log('warn')
       this._log(this.level, message, data);
     }
   }
@@ -73,7 +70,6 @@ export default class Logger extends Storage {
  */
   error(message, error = null) {
     if (this.enablingStages.error.includes(this.level)) {
-        console.log('error')
       this._log(this.level, message, error.message);
     }
   }
