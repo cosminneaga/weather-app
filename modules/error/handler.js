@@ -1,5 +1,5 @@
-import Storage from './storage.js';
-import AppStore from './stores/index.js';
+import Storage from '../storage.js';
+import AppStore from '../stores/index.js';
 
 export default class ErrorHandler extends Storage {
   constructor(value) {

@@ -2,9 +2,9 @@ import { CONFIG } from './config.js';
 import Storage from './storage.js';
 
 export default class Logger extends Storage {
-  constructor() {
+  constructor(...args) {
     super({
-      logs: [],
+      logs: [...args],
     });
     this.levels = { debug: 0, info: 1, warn: 2, error: 3 };
     this.configLevel = CONFIG.LOGGING.LEVEL;
@@ -26,67 +26,70 @@ export default class Logger extends Storage {
     };
   }
 
-/**
- * Logs a debug message if the current log level is enabled for debugging.
- *
- * @param {string} message - The message to log.
- * @param {*} [data=null] - Optional additional data to log.
- */
-  debug(message, data = null) {
+  /**
+   * Logs a debug message if the current log level is enabled for debugging.
+   *
+   * @param {string} message - The message to log.
+   * @param {*} [data] - Optional additional data to log.
+   */
+  debug(message, data) {
     if (this.enablingStages.debug.includes(this.level)) {
-      this._log(this.level, message, data);
+      this._log('DEBUG', message, data);
     }
   }
 
-/**
- * Logs an informational message if the current log level allows it.
- *
- * @param {string} message - The message to log.
- * @param {*} [data=null] - Optional additional data to log.
- */
-  info(message, data = null) {
+  /**
+   * Logs an informational message if the current log level allows it.
+   *
+   * @param {string} message - The message to log.
+   * @param {*} [data] - Optional additional data to log.
+   */
+  info(message, data) {
     if (this.enablingStages.info.includes(this.level)) {
-      this._log(this.level, message, data);
+      this._log('INFO', message, data);
     }
   }
 
-/**
- * Logs a warning message if the current log level is enabled for warnings.
- *
- * @param {string} message - The warning message to log.
- * @param {*} [data=null] - Optional additional data to include with the log entry.
- */
-  warn(message, data = null) {
+  /**
+   * Logs a warning message if the current log level is enabled for warnings.
+   *
+   * @param {string} message - The warning message to log.
+   * @param {*} [data] - Optional additional data to include with the log entry.
+   */
+  warn(message, data) {
     if (this.enablingStages.warn.includes(this.level)) {
-      this._log(this.level, message, data);
+      this._log('WARN', message, data);
     }
   }
 
-/**
- * Logs an error message if the current log level is enabled for errors.
- *
- * @param {string} message - The error message to log.
- * @param {Error|null} [error=null] - An optional Error object containing additional error details.
- */
-  error(message, error = null) {
+  /**
+   * Logs an error message if the current log level is enabled for errors.
+   *
+   * @param {string} message - The error message to log.
+   * @param {Error|null} [error] - An optional Error object containing additional error details.
+   */
+  error(message, error) {
     if (this.enablingStages.error.includes(this.level)) {
-      this._log(this.level, message, error.message);
+      this._log('ERROR', message, error.stack);
     }
   }
 
-/**
- * Logs a message with a specified level and optional data if logging is enabled.
- *
- * @private
- * @param {string} level - The severity level of the log (e.g., 'info', 'error').
- * @param {string} message - The log message to record.
- * @param {Object} [data] - Optional additional data to include in the log entry.
- */
+  /**
+   * Logs a message with a specified level and optional data if logging is enabled.
+   *
+   * @private
+   * @param {string} level - The severity level of the log (e.g., 'info', 'error').
+   * @param {string} message - The log message to record.
+   * @param {Object} [data] - Optional additional data to include in the log entry.
+   */
   _log(level, message, data) {
     if (!this.enabled) return;
 
     const timestamp = new Date().toLocaleTimeString();
-    const line = `[${timestamp}] ${level}: ${message} ${JSON.stringify(data, null, 4)}`;
+    if (typeof data === 'object') {
+      data = JSON.stringify(data, null, 4);
+    }
+    const line = `[${timestamp}] ${level}: ${message}${data ? '|' + data + '|' : ''}`;
     this.unshift(line, 'logs');
 
     if (this.data.logs.length >= this.max) {
@@ -94,28 +97,28 @@ export default class Logger extends Storage {
     }
   }
 
-/**
- * Retrieves the logs stored in the logger.
- * @returns {Array} An array containing the log entries.
- */
+  /**
+   * Retrieves the logs stored in the logger.
+   * @returns {Array} An array containing the log entries.
+   */
   getLogs() {
     return this.data.logs;
   }
 
-/**
- * Clears all log entries from the logger.
- *
- * Empties the `logs` array in the logger's data object.
- */
+  /**
+   * Clears all log entries from the logger.
+   *
+   * Empties the `logs` array in the logger's data object.
+   */
   clearLogs() {
-    this.clear([], 'logs')
+    this.clear([], 'logs');
   }
 
-/**
- * Exports the current logs as a JSON string.
- *
- * @returns {string} A JSON string representation of the logs.
- */
+  /**
+   * Exports the current logs as a JSON string.
+   *
+   * @returns {string} A JSON string representation of the logs.
+   */
   exportLogs() {
     return JSON.stringify(this.data.logs);
   }

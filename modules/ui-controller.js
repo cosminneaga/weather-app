@@ -7,7 +7,7 @@ import {
   getWindSpeedSuffix,
 } from '../modules/utils.js';
 import { getTranslation } from '../modules/config.js';
-import ErrorHandler from './error-handler.js';
+import ErrorHandler from './error/handler.js';
 import AppStore from './stores/index.js';
 const weatherService = new WeatherService();
 
@@ -110,24 +110,6 @@ export const handleSearch = async (data) => {
   hideLoading();
 };
 
-export const showLoading = () => {
-  elements.loading.classList.remove('hidden');
-};
-
-export const hideLoading = () => {
-  elements.loading.classList.add('hidden');
-};
-
-export const showError = (message) => {
-  elements.error.container.classList.remove('hidden');
-  elements.error.message.textContent = message;
-};
-
-export const hideError = () => {
-  elements.error.container.classList.add('hidden');
-  elements.error.message.textContent = '';
-};
-
 export const displayWeather = async (city_weather, unit, lang, history) => {
   const {
     name,
@@ -215,4 +197,23 @@ const displaySearchHistoryAndSetupEvents = (data) => {
     elements.searchHistoryList.appendChild(li);
     setupEventListeners();
   });
+};
+
+
+export const showLoading = () => {
+  elements.loading.classList.remove('hidden');
+};
+
+export const hideLoading = () => {
+  elements.loading.classList.add('hidden');
+};
+
+export const showError = (message) => {
+  elements.error.container.classList.remove('hidden');
+  elements.error.message.textContent = message;
+};
+
+export const hideError = () => {
+  elements.error.container.classList.add('hidden');
+  elements.error.message.textContent = '';
 };
