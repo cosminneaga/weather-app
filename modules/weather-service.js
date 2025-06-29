@@ -2,13 +2,13 @@ import { isValidCity } from '../modules/utils.js';
 import { MOCK_DATA, CONFIG, API_ENDPOINTS } from '../modules/config.js';
 import ErrorHandler from './error/handler.js';
 import Storage from './storage.js';
+import { logger } from './logger.js';
 
 export default class WeatherService extends Storage {
   constructor() {
     super({
       searched: [],
       favourites: [],
-      errors: [],
     });
   }
 
@@ -36,12 +36,13 @@ export default class WeatherService extends Storage {
       const exists = this.contains(json, 'searched', 'name');
       if (!exists) {
         this.unshift(json, 'searched');
+      } else {
+        this.moveToTop(exists.index, 'searched');
       }
 
       return json;
     } catch (error) {
-      console.warn('Date generice au fost afisate cauzate de eroare la apelare API:', error.message);
-      this.unshift({ message: error.message }, 'errors');
+      logger.error('[getCurrentWeather] Generic data has been displayed:', error);
 
       return {
         ...MOCK_DATA,
@@ -73,12 +74,13 @@ export default class WeatherService extends Storage {
       const exists = this.contains(json, 'searched', 'name');
       if (!exists) {
         this.unshift(json, 'searched');
+      } else {
+        this.moveToTop(exists.index, 'searched');
       }
 
       return json;
     } catch (error) {
-      console.warn('Date generice au fost afisate cauzate de eroare la apelare API:', error.message);
-      this.unshift({ message: error.message }, 'errors');
+      logger.error('[getWeatherByCoords] Generic data has been displayed:', error);
 
       return {
         ...MOCK_DATA,
@@ -124,5 +126,9 @@ export default class WeatherService extends Storage {
 
   getSearched() {
     return this.getItem('searched');
+  }
+
+  getFavourites() {
+    return this.getItem('favourites');
   }
 }

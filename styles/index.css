@@ -91,13 +91,24 @@ body:has(div.dark) {
     border-radius: 6px;
 }
 
+.weather-header {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+
+    i#favourites-select:hover {
+        cursor: pointer;
+        color: yellow;
+    }
+}
+
 .weather-header .city-name {
     color: #fff;
     font-size: 2rem;
     font-weight: bold;
     letter-spacing: 1px;
     margin-bottom: 18px;
-    display: block;
 }
 
 .weather-main {
@@ -441,13 +452,15 @@ body:has(div.dark) {
             font-weight: bolder;
         }
         button {
-            padding: 1px 6px;
-            background: red;
+            padding: 4px 6px;
+            background: transparent;
             outline: none;
-            border: 1px solid red;
+            border: none;
             color: white;
             cursor: pointer;
             border-radius: 50%;
+            color: rgb(218, 58, 58);
+            font-size: 20px;
         }
     }
 }

@@ -58,6 +58,12 @@ export const CONFIG = {
     LEVEL: 'debug', // 'debug', 'info', 'warn', 'error'
     MAX_LOGS: 100,
   },
+  DEFAULT: {
+    CITY: 'Cluj',
+    UNIT: 'metric',
+    LANG: 'ro',
+    THEME: 'light',
+  }
 };
 
 export const API_ENDPOINTS = {

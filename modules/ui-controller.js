@@ -8,7 +8,7 @@ import {
 } from '../modules/utils.js';
 import { getTranslation } from '../modules/config.js';
 import ErrorHandler from './error/handler.js';
-import AppStore from './stores/index.js';
+import { appStore } from './stores/index.js';
 const weatherService = new WeatherService();
 
 const elements = {
@@ -18,6 +18,7 @@ const elements = {
   searchBtn: document.querySelector('#search-btn'),
   card: document.querySelector('#weather-card'),
   cityName: document.querySelector('#city-name'),
+  favouritesBtn: document.querySelector('#favourites-select'),
   icon: document.querySelector('#icon'),
   temperature: document.querySelector('#temperature'),
   description: document.querySelector('#description'),
@@ -52,11 +53,10 @@ const elements = {
 };
 
 export const setupEventListeners = () => {
-  const appStore = new AppStore();
   elements.searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     appStore.setCity(getCityInput().trim());
-    await handleSearch(appStore);
+    await handleSearch();
   });
 
   elements.error.closeBtn.addEventListener('click', () => {
@@ -66,17 +66,21 @@ export const setupEventListeners = () => {
 
   elements.selector.language.select.addEventListener('change', async (event) => {
     appStore.setLang(event.target.value);
-    await handleSearch(appStore);
+    await handleSearch();
   });
 
   elements.selector.temperature.select.addEventListener('change', async (event) => {
     appStore.setUnit(event.target.value);
-    await handleSearch(appStore);
+    await handleSearch();
   });
 
   elements.selector.theme.select.addEventListener('change', (event) => {
     appStore.setTheme(event.target.value);
     setTheme(appStore.getTheme());
+  });
+
+  elements.favouritesBtn.addEventListener('click', () => {
+    console.log('clicked')
   });
 };
 
@@ -86,8 +90,8 @@ export const setupSelectors = (lang, unit, theme) => {
   elements.selector.theme.select.value = theme;
 };
 
-export const handleSearch = async (data) => {
-  const { city, lang, unit, list } = data.data;
+export const handleSearch = async () => {
+  const { data: {city, lang, unit, list} } = appStore;
   showLoading();
   try {
     const cityWeather = await weatherService.getCurrentWeather(city, lang, unit);
@@ -187,7 +191,7 @@ const displaySearchHistoryAndSetupEvents = (data) => {
 
     const button = document.createElement('button');
     button.id = 'search-history-delete-item';
-    button.textContent = 'X';
+    button.innerHTML = '<i class="ri-lg ri-delete-bin-2-line"></i>';
     button.addEventListener('click', function (event) {
       const city_name = JSON.parse(li.dataset.city).name;
       appStore.removeCityFromListByName(city_name);
@@ -195,7 +199,6 @@ const displaySearchHistoryAndSetupEvents = (data) => {
     });
     li.appendChild(button);
     elements.searchHistoryList.appendChild(li);
-    setupEventListeners();
   });
 };
 

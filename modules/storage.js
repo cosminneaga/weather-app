@@ -63,6 +63,21 @@ export default class Storage {
   }
 
   /**
+   * Moves the element at the specified index in the named dataset to the top (beginning) of the array.
+   *
+   * @param {number} index - The index of the element to move to the top.
+   * @param {string} name - The name of the dataset (property in `this.data`) to operate on.
+   * @throws {TypeError} If the specified dataset is not an array.
+   */
+  moveToTop(index, name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+    
+    const [data] = this.data[name].splice(index, 1);
+    this.unshift(data, name);
+    this.set({ [name]: this.data[name] }); 
+  }
+
+  /**
    * Clears and resets the stored data for the specified key.
    *
    * @param {string} name - The key/name of the data to clear.
@@ -87,7 +102,10 @@ export default class Storage {
       return false;
     }
 
-    return true;
+    return {
+      exists: true,
+      index: this.data[name].indexOf(item)
+    };
   }
 
   /**

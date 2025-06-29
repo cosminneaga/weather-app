@@ -1,4 +1,5 @@
 import Storage from '../storage.js';
+import { CONFIG } from '../config.js';
 
 export default class AppStore extends Storage {
   constructor(city, unit, lang, theme, list = []) {
@@ -79,3 +80,6 @@ export default class AppStore extends Storage {
     this._setToLocalStorage({ list: this.list });
   }
 }
+
+// Singleton Pattern
+export const appStore = new AppStore(CONFIG.DEFAULT.CITY, CONFIG.DEFAULT.UNIT, CONFIG.DEFAULT.LANG, CONFIG.DEFAULT.THEME);
