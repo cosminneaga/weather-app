@@ -50,6 +50,7 @@ const elements = {
     },
   },
   searchHistory: {
+    title: document.querySelector('#search-history-title-heading'),
     container: document.querySelector('#search-history-container'),
     list: document.querySelector('#weather-search-history-list'),
     clearBtn: document.querySelector('#search-history-clear-button')
@@ -163,6 +164,7 @@ const displayTranslation = (language) => {
     searchButton,
     label: { selector },
     loading,
+    history,
   } = getTranslation(language);
 
   elements.humidity.children[0].textContent = humidity;
@@ -180,18 +182,8 @@ const displayTranslation = (language) => {
   elements.selector.theme.label.textContent = selector.theme;
 
   elements.loadingMessage.textContent = loading;
-};
 
-export const setTheme = (theme) => {
-  elements.app.className = `container ${theme}`;
-};
-
-const getCityInput = () => {
-  return elements.cityInput.value;
-};
-
-const clearCityInput = () => {
-  elements.cityInput.value = '';
+  elements.searchHistory.title.textContent = history.title;
 };
 
 const displaySearchHistoryAndSetupEvents = (data) => {
@@ -239,4 +231,16 @@ export const showError = (message) => {
 export const hideError = () => {
   elements.error.container.classList.add('hidden');
   elements.error.message.textContent = '';
+};
+
+export const setTheme = (theme) => {
+  elements.app.className = `container ${theme}`;
+};
+
+const getCityInput = () => {
+  return elements.cityInput.value;
+};
+
+const clearCityInput = () => {
+  elements.cityInput.value = '';
 };

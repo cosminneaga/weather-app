@@ -94,6 +94,9 @@ export const TRANSLATION = {
     sunrise: 'Răsărit',
     sunset: 'Apus',
     loading: 'Se incarca datele vremii...',
+    history: {
+      title: 'Cautari recente'
+    }
   },
   en: {
     inputPlaceholder: 'Enter city name',
@@ -112,6 +115,9 @@ export const TRANSLATION = {
     sunrise: 'Sunrise',
     sunset: 'Sunset',
     loading: 'Loading weather data...',
+    history: {
+      title: 'Recent searches'
+    }
   },
 };
 export const getTranslation = (lang) => TRANSLATION[lang];

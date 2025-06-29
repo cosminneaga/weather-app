@@ -9,27 +9,27 @@ import { logger } from './modules/logger.js';
   ui.setupEventListeners();
 
   let city;
+  const unit = appStore.getUnit();
+  const lang = appStore.getLang();
+  const theme = appStore.getTheme();
   try {
     const weatherService = new WeatherService();
     const locationService = new LocationService();
     const coords = await locationService.executeWithFallback();
-    city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, 'ro', 'metric');
+    city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, lang, unit);
     appStore.setCity(city.name);
-    ui.displayWeather(city, appStore.getUnit(), appStore.getLang());
+    ui.displayWeather(city, unit, lang);
   } catch (err) {
     ui.handleSearch();
   }
 
-  ui.setupSelectors(appStore.getLang(), appStore.getUnit(), appStore.getTheme());
-  ui.setTheme(appStore.getTheme());
+  ui.setupSelectors(lang, unit, theme);
+  ui.setTheme(theme);
   logger.info('App intialising ended...');
 })();
 
 /* ---------------------------------- NOTES --------------------------------- */
 /**
  * adauga un buton de refresh pentru a reface datele
- * adauga un buton de reset pentru a reveni la orasul initial
- * adauga un buton de favorite pentru a salva orasul curent in localStorage
- * adauga un buton de stergere a orasului din favorite
  * adauga un buton de stergere a textului din input-uri
  */
