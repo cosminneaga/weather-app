@@ -71,6 +71,21 @@ export default class Storage {
     this.data[name].pop();
     this.set({ [name]: this.data[name] });
   }
+  
+  /**
+   * Removes one element at the specified index from the named dataset array.
+   *
+   * @param {number} index - The index of the element to remove from the array.
+   * @param {string} name - The name of the dataset (property in `this.data`) to modify.
+   * @throws {TypeError} If the specified dataset is not an array.
+   */
+  splice(index, name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+    
+    const [data] = this.data[name].splice(index, 1);
+    this.set({ [name]: this.data[name] });
+    return data;
+  }
 
   /**
    * Moves the element at the specified index in the named dataset to the top (beginning) of the array.
@@ -81,10 +96,8 @@ export default class Storage {
    */
   moveToTop(index, name) {
     if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
-    
-    const [data] = this.data[name].splice(index, 1);
+    const data = this.splice(index, name);
     this.unshift(data, name);
-    this.set({ [name]: this.data[name] }); 
   }
 
   /**
@@ -129,6 +142,12 @@ export default class Storage {
     this.set({ [name]: this.data[name] });
   }
 
+  /**
+   * Retrieves the value associated with the specified name from the storage data.
+   *
+   * @param {string} name - The key of the item to retrieve.
+   * @returns {*} The value associated with the given name, or undefined if not found.
+   */
   getItem(name) {
     return this.data[name];
   }

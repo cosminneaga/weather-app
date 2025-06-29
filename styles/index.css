@@ -1,3 +1,7 @@
+:root {
+    --color-red: rgb(250, 95, 95); 
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -443,6 +447,20 @@ body:has(div.dark) {
 .search-history-container {
     padding: 5px;
     border: 1px solid white;
+    .search-history-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+
+        i {
+            color: var(--color-red);
+        }
+
+        i:hover {
+            cursor: pointer;
+        }
+    }
+
     ul {
         padding-left: 25px;
         list-style-type: decimal;
@@ -450,6 +468,14 @@ body:has(div.dark) {
             margin: 5px 0;
             font-size: large;
             font-weight: bolder;
+
+            i {
+                color: var(--color-red);
+            }
+        }
+        li:hover {
+            cursor: pointer;
+            text-decoration: underline;
         }
         button {
             padding: 4px 6px;

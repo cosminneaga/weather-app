@@ -1,25 +1,25 @@
 /**
- * WeatherService provides methods to fetch and manage weather data for cities and coordinates,
- * extending Storage for persistent search and favourite management.
+ * WeatherService provides methods to fetch weather data from an external API,
+ * handle errors gracefully, and manage weather-related data in the application.
  *
  * @class
- * @extends Storage
+ * @classdesc
+ * This service supports fetching current weather by city name or geographic coordinates,
+ * constructs API URLs, and provides utility methods for retrieving searched and favourite cities.
+ * On error, it returns fallback mock data and logs the error.
+ *
+ * @example
+ * const weatherService = new WeatherService();
+ * const weather = await weatherService.getCurrentWeather('London', 'en', 'metric');
  */
 import { isValidCity } from '../modules/utils.js';
 import { MOCK_DATA, CONFIG, API_ENDPOINTS } from '../modules/config.js';
 import ErrorHandler from './error/handler.js';
 import Storage from './storage.js';
 import { logger } from './logger.js';
+import { appStore } from './stores/index.js';
 
-
-export default class WeatherService extends Storage {
-  constructor() {
-    super({
-      searched: [],
-      favourites: [],
-    });
-  }
-
+export default class WeatherService {
   /**
    * Fetches the current weather data for a specified city.
    *
@@ -41,12 +41,7 @@ export default class WeatherService extends Storage {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      const exists = this.contains(json, 'searched', 'name');
-      if (!exists) {
-        this.unshift(json, 'searched');
-      } else {
-        this.moveToTop(exists.index, 'searched');
-      }
+      appStore.addToHistory(json);
 
       return json;
     } catch (error) {
@@ -79,12 +74,7 @@ export default class WeatherService extends Storage {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      const exists = this.contains(json, 'searched', 'name');
-      if (!exists) {
-        this.unshift(json, 'searched');
-      } else {
-        this.moveToTop(exists.index, 'searched');
-      }
+      appStore.addToHistory(json);
 
       return json;
     } catch (error) {

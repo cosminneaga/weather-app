@@ -1,27 +1,19 @@
-/**
- * AppStore class extends Storage to manage application state for a weather app.
- * Handles city, unit, language, theme, and a list (e.g., city history).
- *
- * @class
- * @extends Storage
- *
- * @param {string} city - The initial city for the weather app.
- * @param {string} unit - The unit of measurement (e.g., 'metric', 'imperial').
- * @param {string} lang - The language code (e.g., 'en', 'ro').
- * @param {string} theme - The theme of the app (e.g., 'light', 'dark').
- * @param {Array} [list=[]] - The initial list (e.g., city history).
- */
+
 import Storage from '../storage.js';
 import { CONFIG } from '../config.js';
+import { AppStoreError } from '../error/types.js';
 
 export default class AppStore extends Storage {
-  constructor(city, unit, lang, theme, list = []) {
+  constructor(city, unit, lang, theme, favourites = [], history = []) {
     super({
       city: city,
       unit: unit,
       lang: lang,
       theme: theme,
-      list: list,
+      favourites: favourites,
+      history: history,
+      favouritesLimit: 10,
+      historyLimit: 10
     });
   }
 
@@ -66,12 +58,21 @@ export default class AppStore extends Storage {
   }
 
   /**
-   * Retrieves the list from the store's data.
+   * Retrieves the list of favourite items from the store data.
    *
-   * @returns {Array} The current list stored in the data object.
+   * @returns {Array} An array containing the user's favourite items.
    */
-  getList() {
-    return this.data.list;
+  getFavourites() {
+    return this.data.favourites;
+  }
+
+  /**
+   * Retrieves the history data from the store.
+   *
+   * @returns {Array} The history of weather data.
+   */
+  getHistory() {
+    return this.data.history;
   }
 
   /**
@@ -80,8 +81,7 @@ export default class AppStore extends Storage {
    * @param {string} city - The name of the city to set.
    */
   setCity(city) {
-    this.data.city = city;
-    this.set({ city: city });
+    this.setItem(city, 'city');
   }
 
   /**
@@ -90,8 +90,7 @@ export default class AppStore extends Storage {
    * @param {string} unit - The unit to set (e.g., 'metric', 'imperial').
    */
   setUnit(unit) {
-    this.data.unit = unit;
-    this.set({ unit: unit });
+    this.setItem(unit, 'unit');
   }
 
   /**
@@ -100,8 +99,7 @@ export default class AppStore extends Storage {
    * @param {string} lang - The language code to set (e.g., 'en', 'ro').
    */
   setLang(lang) {
-    this.data.lang = lang;
-    this.set({ lang: lang });
+    this.setItem(lang, 'lang');
   }
 
   /**
@@ -110,51 +108,77 @@ export default class AppStore extends Storage {
    * @param {string} theme - The name of the theme to set (e.g., 'light', 'dark').
    */
   setTheme(theme) {
-    this.data.theme = theme;
-    this.set({ theme: theme });
+    this.setItem(theme, 'theme');
   }
 
-  /**
-   * Adds a data item to the specified list. If the list exceeds 30 items, it is cleared before adding.
-   *
-   * @param {*} data - The data item to add to the list.
-   * @param {string} [name='list'] - The name of the list property to add the item to.
-   */
-  addToList(data, name = 'list') {
-    if (this.data.list.length > 30) this.data.list = [];
-    this.unshift(data, name);
-  }
 
   /**
-   * Adds a city to the list of city history if it does not already exist.
+   * Adds a data item to the favourites list.
+   * If the favourites list has reached its limit, removes the last item before adding.
+   * If the item already exists (based on the 'name' property), moves it to the top.
+   * Otherwise, adds the item to the top of the favourites list.
    *
-   * @param {Object} city - The city object to add to the history list.
-   * @param {string} city.name - The name of the city.
-   * @returns {void}
+   * @param {Object} data - The data item to add to favourites.
    */
-  addToListCitiesHistory(city) {
-    const cityFound = this.data.list.find((item) => item?.name === city?.name);
-    if (cityFound) {
-      return;
+  addToFavourites(data) {
+    if (this.data.favourites.length >= this.data.favouritesLimit) {
+      this.pop('favourites');
     }
-
-    this.addToList(city);
+    const exists = this.contains(data, 'favourites', 'name');
+    if (exists) {
+      return this.moveToTop(exists.index, 'favourites');
+    }
+    this.unshift(data, 'favourites');
   }
 
   /**
-   * Removes a city from the list by its name.
+   * Adds a data entry to the history array, ensuring the history does not exceed the specified limit.
+   * If the entry already exists (based on the 'name' property), it moves the existing entry to the top.
+   * Otherwise, it adds the new entry to the top of the history.
    *
-   * @param {string} city_name - The name of the city to remove from the list.
-   * @returns {void}
+   * @param {Object} data - The data object to add to the history.
    */
-  removeCityFromListByName(city_name) {
-    const cityFound = this.data.list.find((item) => item.name === city_name);
-    if (!cityFound) {
-      return;
+  addToHistory(data) {
+    if (this.data.history.length >= this.data.historyLimit) {
+      this.pop('history');
     }
-    const index = this.data.list.indexOf(cityFound);
-    this.list.splice(index, 1);
-    this._setToLocalStorage({ list: this.list });
+    const exists = this.contains(data, 'history', 'name');
+    if (exists) {
+      return this.moveToTop(exists.index, 'history');
+    }
+    this.unshift(data, 'history');
+  }
+
+  /**
+   * Removes a city from the list of favourites.
+   *
+   * @param {Object} data - The city object to remove from favourites.
+   * @throws {AppStoreError} If the city is not found in the list of favourites.
+   */
+  removeFromFavourites(data) {
+    const exists = this.contains(data, 'favourites', 'name');
+    if (!exists) throw new AppStoreError(`City "${data.name}" has not been found in the list of favourites.`);
+    this.splice(exists.index, 'favourites');
+  }
+
+  /**
+   * Removes a city from the history list.
+   * 
+   * @param {Object} data - The city data object to remove from history.
+   * @throws {AppStoreError} If the city is not found in the history.
+   */
+  removeFromHistory(data) {
+    const exists = this.contains(data, 'history', 'name');
+    if (!exists) throw new AppStoreError(`City "${data.name}" has not been found in the history.`);
+    this.splice(exists.index, 'history');
+  }
+
+  clearFavourites() {
+    this.clear([], 'favourites');
+  }
+
+  clearHistory() {
+    this.clear([], 'history');
   }
 }
 

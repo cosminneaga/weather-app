@@ -49,7 +49,11 @@ const elements = {
       select: document.querySelector('#selector-theme'),
     },
   },
-  searchHistoryList: document.querySelector('#weather-search-history-list'),
+  searchHistory: {
+    container: document.querySelector('#search-history-container'),
+    list: document.querySelector('#weather-search-history-list'),
+    clearBtn: document.querySelector('#search-history-clear-button')
+  } 
 };
 
 export const setupEventListeners = () => {
@@ -79,8 +83,13 @@ export const setupEventListeners = () => {
     setTheme(appStore.getTheme());
   });
 
+  elements.searchHistory.clearBtn.addEventListener('click', () => {
+    appStore.clearHistory();
+    displaySearchHistoryAndSetupEvents(appStore.getHistory());
+  });
+
   elements.favouritesBtn.addEventListener('click', () => {
-    console.log('clicked')
+    console.log('favourites clicked');
   });
 };
 
@@ -91,13 +100,16 @@ export const setupSelectors = (lang, unit, theme) => {
 };
 
 export const handleSearch = async () => {
-  const { data: {city, lang, unit, list} } = appStore;
+  const {
+    data: { city, lang, unit, list },
+  } = appStore;
   showLoading();
+
   try {
     const cityWeather = await weatherService.getCurrentWeather(city, lang, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
 
-    displayWeather(cityWeather, unit, lang, weatherService.getSearched());
+    displayWeather(cityWeather, unit, lang);
     clearCityInput();
   } catch (error) {
     const handler = new ErrorHandler('DISPLAY_WEATHER').get();
@@ -106,7 +118,7 @@ export const handleSearch = async () => {
       showError(`"${error.message}" ${handler.message}`);
     } else {
       const json = JSON.parse(error.message);
-      displayWeather(json, unit, lang, weatherService.getSearched());
+      displayWeather(json, unit, lang);
       showError(`"${json.fallbackReason}" ${handler.message}`);
     }
   }
@@ -114,7 +126,7 @@ export const handleSearch = async () => {
   hideLoading();
 };
 
-export const displayWeather = async (city_weather, unit, lang, history) => {
+export const displayWeather = async (city_weather, unit, lang) => {
   const {
     name,
     weather,
@@ -136,7 +148,7 @@ export const displayWeather = async (city_weather, unit, lang, history) => {
   elements.sunset.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
 
   displayTranslation(lang);
-  displaySearchHistoryAndSetupEvents(history);
+  displaySearchHistoryAndSetupEvents(appStore.getHistory());
 };
 
 const displayTranslation = (language) => {
@@ -183,25 +195,33 @@ const clearCityInput = () => {
 };
 
 const displaySearchHistoryAndSetupEvents = (data) => {
-  elements.searchHistoryList.innerHTML = '';
+  if (data.length <= 0) {
+    elements.searchHistory.container.classList.add('hidden');
+  } else {
+    elements.searchHistory.container.classList.remove('hidden');
+  }
+
+  elements.searchHistory.list.innerHTML = '';
   data.forEach((item) => {
     const li = document.createElement('li');
     li.setAttribute('data-city', JSON.stringify(item));
     li.textContent = item?.name + ' ';
+    li.addEventListener('click', (event) => {
+      appStore.setCity(JSON.parse(li.dataset.city).name);
+      handleSearch();
+    });
 
     const button = document.createElement('button');
     button.id = 'search-history-delete-item';
-    button.innerHTML = '<i class="ri-lg ri-delete-bin-2-line"></i>';
+    button.innerHTML = '<i class="ri-lg ri-close-circle-line"></i>';
     button.addEventListener('click', function (event) {
-      const city_name = JSON.parse(li.dataset.city).name;
-      appStore.removeCityFromListByName(city_name);
+      appStore.removeFromHistory(JSON.parse(li.dataset.city));
       li.remove();
     });
     li.appendChild(button);
-    elements.searchHistoryList.appendChild(li);
+    elements.searchHistory.list.appendChild(li);
   });
 };
-
 
 export const showLoading = () => {
   elements.loading.classList.remove('hidden');

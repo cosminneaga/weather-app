@@ -15,7 +15,7 @@ import { logger } from './modules/logger.js';
     const coords = await locationService.executeWithFallback();
     city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, 'ro', 'metric');
     appStore.setCity(city.name);
-    ui.displayWeather(city, appStore.getUnit(), appStore.getLang(), weatherService.getSearched());
+    ui.displayWeather(city, appStore.getUnit(), appStore.getLang());
   } catch (err) {
     ui.handleSearch();
   }
