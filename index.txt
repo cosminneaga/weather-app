@@ -1,0 +1,10 @@
+feat: cleanup & improvements
+
+- `app.js` clean-up done
+- `index.html` added favourites icon
+- `config.js` added default data which used to initialise app
+- `Storage` `moveToTop` of an array method added
+- `logger` implemented across app
+- `AppStore` exported as Singleton Pattern in order to persist data in object
+- styles moved under a sub-folder called `styles`
+- added remixicons package
