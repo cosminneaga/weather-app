@@ -11,6 +11,7 @@ logger.debug('Debug message', { test: true });
 logger.warn('Warning message');
 logger.error('Error message', new Error('Test error'));
 
+// logger.clearLogs()
 console.log('All logs:', logger.getLogs());
 
 // (async function init() {

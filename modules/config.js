@@ -55,7 +55,7 @@ export const CONFIG = {
   MAX_HISTORY_ITEMS: 10,
   LOGGING: {
     ENABLED: true,
-    LEVEL: 'error', // 'debug', 'info', 'warn', 'error'
+    LEVEL: 'debug', // 'debug', 'info', 'warn', 'error'
     MAX_LOGS: 100,
   },
 };
