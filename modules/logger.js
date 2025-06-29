@@ -1,3 +1,19 @@
+/**
+ * Logger class for managing application logs with configurable log levels and storage.
+ * Extends the Storage class to persist log entries.
+ *
+ * @class
+ * @extends Storage
+ *
+ * @param {...*} args - Initial log entries to store.
+ *
+ * @property {Object} levels - Mapping of log level names to numeric values.
+ * @property {string} configLevel - The log level configured in the application settings.
+ * @property {number} level - The numeric value of the current log level.
+ * @property {boolean} enabled - Whether logging is enabled.
+ * @property {number} max - Maximum number of logs to retain.
+ * @property {Object} enablingStages - Mapping of log levels to arrays of enabled numeric levels.
+ */
 import { CONFIG } from './config.js';
 import Storage from './storage.js';
 

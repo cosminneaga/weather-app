@@ -1,3 +1,11 @@
+/**
+ * ErrorHandler class extends Storage to handle application errors with localization support.
+ * It maps error codes or names to user-friendly messages in different languages.
+ *
+ * @class
+ * @extends Storage
+ *
+ */
 import Storage from '../storage.js';
 import { appStore } from '../stores/index.js';
 
@@ -69,6 +77,14 @@ export default class ErrorHandler extends Storage {
     ];
   }
 
+  /**
+   * Retrieves an error object matching the current value and formats its message based on the selected language.
+   *
+   * The method determines the key to search by (`code` for numbers, `name` for strings) and finds the corresponding error in the `errors` array.
+   * It then returns a new object with all properties of the found error, but with the `message` property localized to the current language.
+   *
+   * @returns {Object} The matched error object with a localized message, or `undefined` if no match is found.
+   */
   get() {
     let key = '';
     switch (typeof this.value) {
@@ -90,6 +106,11 @@ export default class ErrorHandler extends Storage {
     };
   }
 
+  /**
+   * Throws an error using the current error object.
+   * Retrieves the current error, stores it in a list, and then throws a new Error with the error's message.
+   * @throws {Error} Throws an error with the current error's message.
+   */
   throw() {
     const error = this.get();
     this.setItem(error, 'list');

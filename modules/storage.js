@@ -1,3 +1,13 @@
+
+/**
+ * Storage class for managing and persisting data in localStorage.
+ * Provides array-like operations and utility methods for manipulating stored datasets.
+ *
+ * @class
+ * @example
+ * const storage = new Storage({ favorites: [] });
+ * storage.push({ city: 'London' }, 'favorites');
+ */
 export default class Storage {
   constructor(data) {
     const storage = JSON.parse(localStorage.getItem(this.constructor.name));

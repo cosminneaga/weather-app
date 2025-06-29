@@ -1,8 +1,16 @@
+/**
+ * WeatherService provides methods to fetch and manage weather data for cities and coordinates,
+ * extending Storage for persistent search and favourite management.
+ *
+ * @class
+ * @extends Storage
+ */
 import { isValidCity } from '../modules/utils.js';
 import { MOCK_DATA, CONFIG, API_ENDPOINTS } from '../modules/config.js';
 import ErrorHandler from './error/handler.js';
 import Storage from './storage.js';
 import { logger } from './logger.js';
+
 
 export default class WeatherService extends Storage {
   constructor() {
