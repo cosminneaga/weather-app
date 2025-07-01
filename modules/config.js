@@ -57,6 +57,7 @@ export const CONFIG = {
     ENABLED: true,
     LEVEL: 'debug', // 'debug', 'info', 'warn', 'error'
     MAX_LOGS: 100,
+    CONSOLE_ENABLED: true,
   },
   DEFAULT: {
     CITY: 'Cluj',

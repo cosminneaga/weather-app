@@ -27,6 +27,7 @@ export default class Logger extends Storage {
     this.level = this.levels[this.configLevel];
     this.enabled = CONFIG.LOGGING.ENABLED;
     this.max = CONFIG.LOGGING.MAX_LOGS;
+    this.consoleEnabled = CONFIG.LOGGING.CONSOLE_ENABLED;
 
     /**
      * 'enablingStage' enables certain logs for each level
@@ -105,7 +106,8 @@ export default class Logger extends Storage {
     if (typeof data === 'object') {
       data = JSON.stringify(data, null, 4);
     }
-    const line = `[${timestamp}] ${level}: ${message}${data ? '|' + data + '|' : ''}`;
+    const line = `[${timestamp}] ${level}: ${message}${data ? '|' + data : ''}`;
+    if (this.consoleEnabled) console.log(line);
     this.unshift(line, 'logs');
 
     if (this.data.logs.length >= this.max) {

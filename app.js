@@ -25,7 +25,7 @@ import { logger } from './modules/logger.js';
 
   ui.setupSelectors(lang, unit, theme);
   ui.setTheme(theme);
-  logger.info('App intialising ended...');
+  logger.info('App intialised successfully...');
 })();
 
 /* ---------------------------------- NOTES --------------------------------- */

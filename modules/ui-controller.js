@@ -1,4 +1,5 @@
 import WeatherService from '../modules/weather-service.js';
+import ErrorHandler from './error/handler.js';
 import {
   convertDateUnixToLocaleTime,
   convertVisibilityLength,
@@ -7,8 +8,8 @@ import {
   getWindSpeedSuffix,
 } from '../modules/utils.js';
 import { getTranslation } from '../modules/config.js';
-import ErrorHandler from './error/handler.js';
 import { appStore } from './stores/index.js';
+import { logger } from './logger.js';
 const weatherService = new WeatherService();
 
 const elements = {
@@ -61,6 +62,7 @@ export const setupEventListeners = () => {
   elements.searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     appStore.setCity(getCityInput().trim());
+    logger.info('Form submitted', appStore.getAll());
     await handleSearch();
   });
 
@@ -71,21 +73,25 @@ export const setupEventListeners = () => {
 
   elements.selector.language.select.addEventListener('change', async (event) => {
     appStore.setLang(event.target.value);
+    logger.info('Language changed', appStore.getAll());
     await handleSearch();
   });
 
   elements.selector.temperature.select.addEventListener('change', async (event) => {
     appStore.setUnit(event.target.value);
+    logger.info('Unit changed', appStore.getAll());
     await handleSearch();
   });
 
   elements.selector.theme.select.addEventListener('change', (event) => {
     appStore.setTheme(event.target.value);
+    logger.info('Theme changed', appStore.getAll());
     setTheme(appStore.getTheme());
   });
 
   elements.searchHistory.clearBtn.addEventListener('click', () => {
     appStore.clearHistory();
+    logger.info('Searching history clear.', appStore.getAll());
     displaySearchHistoryAndSetupEvents(appStore.getHistory());
   });
 

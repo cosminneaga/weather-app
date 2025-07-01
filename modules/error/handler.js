@@ -1,22 +1,23 @@
+
 /**
- * ErrorHandler class extends Storage to handle application errors with localization support.
- * It maps error codes or names to user-friendly messages in different languages.
+ * ErrorHandler class manages application errors, providing localized messages and error handling utilities.
  *
  * @class
- * @extends Storage
- *
+ * @example
+ * import { errorHandler } from './handler.js';
+ * try {
+ *   errorHandler.throw('CITY_NOT_FOUND');
+ * } catch (e) {
+ *   console.error(e.message);
+ * }
  */
-import Storage from '../storage.js';
 import { appStore } from '../stores/index.js';
+import { logger } from '../logger.js';
 
-export default class ErrorHandler extends Storage {
+export default class ErrorHandler {
   constructor(value) {
-    super({
-      list: [],
-    });
-
     this.value = value;
-    this.language = appStore.getLang() || 'ro';
+    this.language = appStore.getLang();
     this.errors = [
       {
         name: 'CITY_INVALID',
@@ -39,7 +40,7 @@ export default class ErrorHandler extends Storage {
         code: null,
         message: {
           ro: 'A aparut o eroare de retea... Reincerca mai tarziu.',
-          en: 'Netwrok error... Retry later.',
+          en: 'Network error... Retry later.',
         },
       },
       {
@@ -77,29 +78,34 @@ export default class ErrorHandler extends Storage {
     ];
   }
 
+
   /**
-   * Retrieves an error object matching the current value and formats its message based on the selected language.
+   * Retrieves an error object by its code (number) or name (string).
    *
-   * The method determines the key to search by (`code` for numbers, `name` for strings) and finds the corresponding error in the `errors` array.
-   * It then returns a new object with all properties of the found error, but with the `message` property localized to the current language.
-   *
-   * @returns {Object} The matched error object with a localized message, or `undefined` if no match is found.
+   * @param {string|number} value - The error code (number) or name (string) to look up.
+   * @returns {Object} The matched error object with a localized message.
+   * @throws {TypeError} If the value is not a string or number.
+   * @throws {Error} If the value does not match any known error code or name.
    */
   get() {
-    let key = '';
+    if (!['string', 'number'].includes(typeof this.value)) throw new TypeError(`The type of ${this.value} must be "number" or "string"`);
+
+    let key = null;
     switch (typeof this.value) {
       case 'number':
+        const codes = this.errors.map((item) => item.code).filter((item) => item !== null);
+        if (!codes.includes(this.value)) throw new Error(`The value '${this.value}' should be one of the followings: ${codes.join(',')}`);
         key = 'code';
         break;
       case 'string':
+        const names = this.errors.map((item) => item.name);
+        if (!names.includes(this.value)) throw new Error(`The value '${this.value}' should be one of the followings: ${codes.join(',')}`);
         key = 'name';
-        break;
-      default:
-        key = 'code';
         break;
     }
 
     const error = this.errors.find((error) => error[key] === this.value);
+    logger.debug('[ErrorHandler.get] Has been triggered', { data: this.value, error: error });
     return {
       ...error,
       message: error.message[this.language],
@@ -113,8 +119,7 @@ export default class ErrorHandler extends Storage {
    */
   throw() {
     const error = this.get();
-    this.setItem(error, 'list');
-
+    logger.debug('[ErrorHandler.throw] Has been triggered', { data: this.value, error: error });
     throw new Error(error.message);
   }
 }

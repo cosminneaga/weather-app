@@ -42,10 +42,10 @@ export default class WeatherService {
       }
       const json = await request.json();
       appStore.addToHistory(json);
-
+      logger.info('[getCurrentWeather] City data has been retrieved and added to history', json);
       return json;
     } catch (error) {
-      logger.error('[getCurrentWeather] Generic data has been displayed:', error);
+      logger.error('[getCurrentWeather] MOCK_DATA has been loaded to UI', error);
 
       return {
         ...MOCK_DATA,
@@ -75,10 +75,10 @@ export default class WeatherService {
       }
       const json = await request.json();
       appStore.addToHistory(json);
-
+      logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
       return json;
     } catch (error) {
-      logger.error('[getWeatherByCoords] Generic data has been displayed:', error);
+      logger.error('[getWeatherByCoords] MOCK_DATA has been loaded to UI', error);
 
       return {
         ...MOCK_DATA,

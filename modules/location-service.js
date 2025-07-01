@@ -43,10 +43,10 @@ export default class LocationService {
         source: 'ip',
         accuracy: 'city',
       };
-      logger.info('Location retrieved using API', result);
+      logger.info('[LocationService.getByAPI] Location retrieved using API', result);
       return result;
     } catch (error) {
-      logger.error(`API location failed: ${error.message}`, error);
+      logger.error(`[LocationService.getByAPI] API location failed: ${error.message}`, error);
       throw new LocationServiceAPIError(error.message);
     }
   }
@@ -72,10 +72,10 @@ export default class LocationService {
         source: 'gps',
         accuracy: 'precise',
       };
-      logger.info('Location retrieved using GPS:', result);
+      logger.info('[LocationService.getByGPS] Location retrieved using GPS:', result);
       return result;
     } catch (error) {
-      logger.error(`Geolocation failed: ${error.message}`, error);
+      logger.error(`[LocationService.getByGPS] Geolocation failed: ${error.message}`, error);
       throw new LocationServiceGPSError(error.message);
     }
   }
