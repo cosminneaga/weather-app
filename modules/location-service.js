@@ -1,59 +1,82 @@
-// modules/location-service.js
-export const getCoords = () =>
-  new Promise((resolve, reject) => {
-    // Funcția de fallback - când geolocation eșuează
-    const fallbackToIp = async () => {
-      try {
-        // Ce API public oferă locația bazată pe IP?
-        // Hint: încearcă <https://ipapi.co/json/> - este gratuit și nu necesită API key
-        const response = await fetch("https://ipapi.co/json");
-        const data = await response.json();
-        console.log("ip", data);
+/**
+ * LocationService provides methods to retrieve the user's geographic location using either
+ * the device's GPS or a remote API as a fallback. It handles errors and logs relevant information.
+ *
+ * @class
+ */
+import { LocationServiceError, LocationServiceAPIError, LocationServiceGPSError } from './error/types.js';
+import {logger} from './logger.js';
 
-        // Ce proprietăți returnează pentru coordonate?
-        // Hint: verifică în browser console ce structură are răspunsul
-        resolve({
-          latitude: data.latitude,
-          longitude: data.longitude,
-          source: "ip",
-          accuracy: "city", // IP location e mai puțin precisă
-        });
-      } catch (error) {
-        // Ce faci când nici IP location nu funcționează?
-        reject(new Error("Nu am putut determina locația"));
-      }
-    };
+export default class LocationService {
+  constructor() {
+    this.host = 'https://ipapi.co/json';
+  }
 
-    // Verifică dacă browser-ul suportă geolocation
-    if (!navigator.geolocation) {
-      return fallbackToIp();
+  /**
+   * Attempts to retrieve the location using GPS. If that fails, falls back to retrieving the location via an API.
+   * @returns {Promise<any>} A promise that resolves with the location data from either GPS or API.
+   * @throws {Error} If both GPS and API retrieval fail.
+   */
+  async executeWithFallback() {
+    try {
+      return await this.getByGPS();
+    } catch (error) {
+      return await this.getByAPI();
     }
+  }
 
-    // Încearcă geolocation mai întâi
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        // Cum extragi coordonatele din position?
-        console.log("position", position);
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          source: "gps",
-          accuracy: "precise",
-        });
-      },
-      (error) => {
-        // Ce tipuri de erori pot apărea?
-        // PERMISSION_DENIED = ?
-        // POSITION_UNAVAILABLE = ?
-        // TIMEOUT = ?
-        console.warn("Geolocation failed:", error.message);
-        fallbackToIp();
-      },
-      {
-        // Ce opțiuni sunt utile?
-        timeout: 500,
-        enableHighAccuracy: true,
-        maximumAge: 1000,
-      }
-    );
-  });
+  /**
+   * Retrieves the user's location data from a remote API.
+   *
+   * @async
+   * @returns {Promise<{latitude: number, longitude: number, source: string, accuracy: string}>}
+   *   An object containing latitude, longitude, source, and accuracy of the location.
+   * @throws {LocationServiceAPIError} If the API request fails.
+   */
+  async getByAPI() {
+    try {
+      const response = await fetch(this.host);
+      const data = await response.json();
+      const result = {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        source: 'ip',
+        accuracy: 'city',
+      };
+      logger.info('[LocationService.getByAPI] Location retrieved using API', result);
+      return result;
+    } catch (error) {
+      logger.error(`[LocationService.getByAPI] API location failed: ${error.message}`, error);
+      throw new LocationServiceAPIError(error.message);
+    }
+  }
+
+  /**
+   * Retrieves the current geographic location using the device's GPS.
+   *
+   * @async
+   * @function
+   * @param {PositionOptions} [options] - Optional geolocation API options.
+   * @returns {Promise<{latitude: number, longitude: number, source: string, accuracy: string}>}
+   *   An object containing latitude, longitude, source ('gps'), and accuracy ('precise').
+   * @throws {LocationServiceGPSError} If geolocation retrieval fails.
+   */
+  async getByGPS(options) {
+    try {
+      const data = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+      const result = {
+        latitude: data.coords.latitude,
+        longitude: data.coords.longitude,
+        source: 'gps',
+        accuracy: 'precise',
+      };
+      logger.info('[LocationService.getByGPS] Location retrieved using GPS:', result);
+      return result;
+    } catch (error) {
+      logger.error(`[LocationService.getByGPS] Geolocation failed: ${error.message}`, error);
+      throw new LocationServiceGPSError(error.message);
+    }
+  }
+}

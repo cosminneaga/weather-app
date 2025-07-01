@@ -1,17 +1,24 @@
-import { isValidCity } from "../modules/utils.js";
-import { MOCK_DATA, CONFIG, API_ENDPOINTS } from "../modules/config.js";
-import ErrorHandler from "./error-handler.js";
-import Storage from "./storage.js";
+/**
+ * WeatherService provides methods to fetch weather data from an external API,
+ * handle errors gracefully, and manage weather-related data in the application.
+ *
+ * @class
+ * @classdesc
+ * This service supports fetching current weather by city name or geographic coordinates,
+ * constructs API URLs, and provides utility methods for retrieving searched and favourite cities.
+ * On error, it returns fallback mock data and logs the error.
+ *
+ * @example
+ * const weatherService = new WeatherService();
+ * const weather = await weatherService.getCurrentWeather('London', 'en', 'metric');
+ */
+import { isValidCity } from '../modules/utils.js';
+import { MOCK_DATA, CONFIG, API_ENDPOINTS } from '../modules/config.js';
+import ErrorHandler from './error/handler.js';
+import { logger } from './logger.js';
+import { appStore } from './stores/index.js';
 
-export default class WeatherService extends Storage {
-  constructor() {
-    super({
-      searched: [],
-      favourites: [],
-      errors: [],
-    });
-  }
-
+export default class WeatherService {
   /**
    * Fetches the current weather data for a specified city.
    *
@@ -23,8 +30,8 @@ export default class WeatherService extends Storage {
    */
   async getCurrentWeather(city, lang, unit) {
     try {
-      const cityWithoutDiacritics = city.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler("CITY_INVALID").throw();
+      const cityWithoutDiacritics = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler('CITY_INVALID').throw();
 
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
@@ -33,15 +40,11 @@ export default class WeatherService extends Storage {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      const exists = this.contains(json, "searched", "name");
-      if (!exists) {
-        this.unshift(json, "searched");
-      }
-
+      appStore.addToHistory(json);
+      logger.info('[getCurrentWeather] City data has been retrieved and added to history', json);
       return json;
     } catch (error) {
-      console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
-      this.unshift({ message: error.message }, "errors");
+      logger.error('[getCurrentWeather] MOCK_DATA has been loaded to UI', error);
 
       return {
         ...MOCK_DATA,
@@ -70,15 +73,11 @@ export default class WeatherService extends Storage {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      const exists = this.contains(json, "searched", "name");
-      if (!exists) {
-        this.unshift(json, "searched");
-      }
-
+      appStore.addToHistory(json);
+      logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
       return json;
     } catch (error) {
-      console.warn("Date generice au fost afisate cauzate de eroare la apelare API:", error.message);
-      this.unshift({ message: error.message }, "errors");
+      logger.error('[getWeatherByCoords] MOCK_DATA has been loaded to UI', error);
 
       return {
         ...MOCK_DATA,
@@ -100,7 +99,7 @@ export default class WeatherService extends Storage {
    */
   _buildWeatherUrl(endpoint, params = {}) {
     const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);
-    url.searchParams.set("appid", CONFIG.API_KEY);
+    url.searchParams.set('appid', CONFIG.API_KEY);
 
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value);
@@ -123,6 +122,10 @@ export default class WeatherService extends Storage {
   }
 
   getSearched() {
-    return this.getItem("searched");
+    return this.getItem('searched');
+  }
+
+  getFavourites() {
+    return this.getItem('favourites');
   }
 }

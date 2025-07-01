@@ -1,82 +1,113 @@
-import WeatherService from "../modules/weather-service.js";
+import WeatherService from '../modules/weather-service.js';
+import ErrorHandler from './error/handler.js';
 import {
   convertDateUnixToLocaleTime,
   convertVisibilityLength,
   convertWindSpeedInKm,
   getTemperatureSymbol,
   getWindSpeedSuffix,
-} from "../modules/utils.js";
-import { getTranslation } from "../modules/config.js";
-import ErrorHandler from "./error-handler.js";
-import AppStore from "./stores/index.js";
+} from '../modules/utils.js';
+import { getTranslation } from '../modules/config.js';
+import { appStore } from './stores/index.js';
+import { logger } from './logger.js';
 const weatherService = new WeatherService();
 
 const elements = {
-  app: document.querySelector("#app"),
-  cityInput: document.querySelector("#city-input"),
-  searchForm: document.querySelector("#search-form"),
-  searchBtn: document.querySelector("#search-btn"),
-  card: document.querySelector("#weather-card"),
-  cityName: document.querySelector("#city-name"),
-  icon: document.querySelector("#icon"),
-  temperature: document.querySelector("#temperature"),
-  description: document.querySelector("#description"),
-  humidity: document.querySelector("#humidity"),
-  pressure: document.querySelector("#pressure"),
-  wind: document.querySelector("#wind"),
-  visibility: document.querySelector("#visibility"),
-  sunrise: document.querySelector("#sunrise"),
-  sunset: document.querySelector("#sunset"),
-  loading: document.querySelector("#loading"),
-  loadingMessage: document.querySelector("#loading-message"),
+  app: document.querySelector('#app'),
+  cityInput: document.querySelector('#city-input'),
+  searchForm: document.querySelector('#search-form'),
+  searchBtn: document.querySelector('#search-btn'),
+  downloadLogsBtn: document.querySelector('#download-logs-button'),
+  card: document.querySelector('#weather-card'),
+  cityName: document.querySelector('#city-name'),
+  favouritesBtn: document.querySelector('#favourites-select'),
+  icon: document.querySelector('#icon'),
+  temperature: document.querySelector('#temperature'),
+  description: document.querySelector('#description'),
+  humidity: document.querySelector('#humidity'),
+  pressure: document.querySelector('#pressure'),
+  wind: document.querySelector('#wind'),
+  visibility: document.querySelector('#visibility'),
+  sunrise: document.querySelector('#sunrise'),
+  sunset: document.querySelector('#sunset'),
+  loading: document.querySelector('#loading'),
+  loadingMessage: document.querySelector('#loading-message'),
   error: {
-    container: document.querySelector("#error-container"),
-    closeBtn: document.querySelector("#error-close"),
-    message: document.querySelector("#error-message"),
+    container: document.querySelector('#error-container'),
+    closeBtn: document.querySelector('#error-close'),
+    message: document.querySelector('#error-message'),
   },
   selector: {
     language: {
       label: document.querySelector('label[for="selector-language"]'),
-      select: document.querySelector("#selector-language"),
+      select: document.querySelector('#selector-language'),
     },
     temperature: {
       label: document.querySelector('label[for="selector-temperature"]'),
-      select: document.querySelector("#selector-temperature"),
+      select: document.querySelector('#selector-temperature'),
     },
     theme: {
       label: document.querySelector('label[for="selector-theme"]'),
-      select: document.querySelector("#selector-theme"),
+      select: document.querySelector('#selector-theme'),
     },
   },
-  searchHistoryList: document.querySelector("#weather-search-history-list"),
+  searchHistory: {
+    title: document.querySelector('#search-history-title-heading'),
+    container: document.querySelector('#search-history-container'),
+    list: document.querySelector('#weather-search-history-list'),
+    clearBtn: document.querySelector('#search-history-clear-button')
+  } 
 };
 
 export const setupEventListeners = () => {
-  const appStore = new AppStore();
-  elements.searchForm.addEventListener("submit", async (event) => {
+  elements.searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     appStore.setCity(getCityInput().trim());
-    await handleSearch(appStore);
+    logger.info('Form submitted', appStore.getAll());
+    await handleSearch();
   });
 
-  elements.error.closeBtn.addEventListener("click", () => {
+  elements.error.closeBtn.addEventListener('click', () => {
     clearCityInput();
     hideError();
   });
 
-  elements.selector.language.select.addEventListener("change", async (event) => {
+  elements.selector.language.select.addEventListener('change', async (event) => {
     appStore.setLang(event.target.value);
-    await handleSearch(appStore);
+    logger.info('Language changed', appStore.getAll());
+    await handleSearch();
   });
 
-  elements.selector.temperature.select.addEventListener("change", async (event) => {
+  elements.selector.temperature.select.addEventListener('change', async (event) => {
     appStore.setUnit(event.target.value);
-    await handleSearch(appStore);
+    logger.info('Unit changed', appStore.getAll());
+    await handleSearch();
   });
 
-  elements.selector.theme.select.addEventListener("change", (event) => {
+  elements.selector.theme.select.addEventListener('change', (event) => {
     appStore.setTheme(event.target.value);
+    logger.info('Theme changed', appStore.getAll());
     setTheme(appStore.getTheme());
+  });
+
+  elements.searchHistory.clearBtn.addEventListener('click', () => {
+    appStore.clearHistory();
+    logger.info('Searching history clear.', appStore.getAll());
+    displaySearchHistoryAndSetupEvents(appStore.getHistory());
+  });
+
+  elements.favouritesBtn.addEventListener('click', () => {
+    // TODO code to be added at later stage
+  });
+
+  elements.downloadLogsBtn.addEventListener('click', () => {
+    const data = `data:text/json;charset=utf-8,${encodeURIComponent(logger.getLogs())}`;
+    const a = document.createElement('a');
+    a.setAttribute('href', data);
+    a.setAttribute('download', 'logs.txt');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   });
 };
 
@@ -86,23 +117,26 @@ export const setupSelectors = (lang, unit, theme) => {
   elements.selector.theme.select.value = theme;
 };
 
-export const handleSearch = async (data) => {
-  const { city, lang, unit, list } = data.data;
+export const handleSearch = async () => {
+  const {
+    data: { city, lang, unit, list },
+  } = appStore;
   showLoading();
+
   try {
     const cityWeather = await weatherService.getCurrentWeather(city, lang, unit);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
 
-    displayWeather(cityWeather, unit, lang, weatherService.getSearched());
+    displayWeather(cityWeather, unit, lang);
     clearCityInput();
   } catch (error) {
-    const handler = new ErrorHandler("DISPLAY_WEATHER").get();
+    const handler = new ErrorHandler('DISPLAY_WEATHER').get();
 
     if (error instanceof TypeError || error instanceof ReferenceError) {
       showError(`"${error.message}" ${handler.message}`);
     } else {
       const json = JSON.parse(error.message);
-      displayWeather(json, unit, lang, weatherService.getSearched());
+      displayWeather(json, unit, lang);
       showError(`"${json.fallbackReason}" ${handler.message}`);
     }
   }
@@ -110,25 +144,7 @@ export const handleSearch = async (data) => {
   hideLoading();
 };
 
-export const showLoading = () => {
-  elements.loading.classList.remove("hidden");
-};
-
-export const hideLoading = () => {
-  elements.loading.classList.add("hidden");
-};
-
-export const showError = (message) => {
-  elements.error.container.classList.remove("hidden");
-  elements.error.message.textContent = message;
-};
-
-export const hideError = () => {
-  elements.error.container.classList.add("hidden");
-  elements.error.message.textContent = "";
-};
-
-export const displayWeather = async (city_weather, unit, lang, history) => {
+export const displayWeather = async (city_weather, unit, lang) => {
   const {
     name,
     weather,
@@ -141,7 +157,7 @@ export const displayWeather = async (city_weather, unit, lang, history) => {
   elements.cityName.textContent = name;
   elements.icon.src = weatherService._buildIconUrl(weather[0].icon);
   elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(unit)}`;
-  elements.description.textContent = weather.map((item) => item.description).join(", ");
+  elements.description.textContent = weather.map((item) => item.description).join(', ');
   elements.humidity.children[1].textContent = `${humidity}%`;
   elements.pressure.children[1].textContent = `${pressure} hPa`;
   elements.wind.children[1].textContent = `${convertWindSpeedInKm(speed)} ${getWindSpeedSuffix(unit)}`;
@@ -150,7 +166,7 @@ export const displayWeather = async (city_weather, unit, lang, history) => {
   elements.sunset.children[1].innerHTML = `${convertDateUnixToLocaleTime(sunset)}`;
 
   displayTranslation(lang);
-  displaySearchHistoryAndSetupEvents(history);
+  displaySearchHistoryAndSetupEvents(appStore.getHistory());
 };
 
 const displayTranslation = (language) => {
@@ -165,6 +181,7 @@ const displayTranslation = (language) => {
     searchButton,
     label: { selector },
     loading,
+    history,
   } = getTranslation(language);
 
   elements.humidity.children[0].textContent = humidity;
@@ -182,6 +199,56 @@ const displayTranslation = (language) => {
   elements.selector.theme.label.textContent = selector.theme;
 
   elements.loadingMessage.textContent = loading;
+
+  elements.searchHistory.title.textContent = history.title;
+};
+
+const displaySearchHistoryAndSetupEvents = (data) => {
+  if (data.length <= 0) {
+    elements.searchHistory.container.classList.add('hidden');
+  } else {
+    elements.searchHistory.container.classList.remove('hidden');
+  }
+
+  elements.searchHistory.list.innerHTML = '';
+  data.forEach((item) => {
+    const li = document.createElement('li');
+    li.setAttribute('data-city', JSON.stringify(item));
+    const span = document.createElement('span');
+    span.textContent = item?.name + ' ';
+    li.appendChild(span);
+    span.addEventListener('click', (event) => {
+      appStore.setCity(JSON.parse(li.dataset.city).name);
+      handleSearch();
+    });
+
+    const button = document.createElement('button');
+    button.innerHTML = '<i class="ri-lg ri-close-circle-line"></i>';
+    button.addEventListener('click', function (event) {
+      appStore.removeFromHistory(JSON.parse(li.dataset.city));
+      li.remove();
+    });
+    li.appendChild(button);
+    elements.searchHistory.list.appendChild(li);
+  });
+};
+
+export const showLoading = () => {
+  elements.loading.classList.remove('hidden');
+};
+
+export const hideLoading = () => {
+  elements.loading.classList.add('hidden');
+};
+
+export const showError = (message) => {
+  elements.error.container.classList.remove('hidden');
+  elements.error.message.textContent = message;
+};
+
+export const hideError = () => {
+  elements.error.container.classList.add('hidden');
+  elements.error.message.textContent = '';
 };
 
 export const setTheme = (theme) => {
@@ -193,26 +260,5 @@ const getCityInput = () => {
 };
 
 const clearCityInput = () => {
-  elements.cityInput.value = "";
-};
-
-const displaySearchHistoryAndSetupEvents = (data) => {
-  elements.searchHistoryList.innerHTML = "";
-  data.forEach((item) => {
-    const li = document.createElement("li");
-    li.setAttribute("data-city", JSON.stringify(item));
-    li.textContent = item?.name + " ";
-
-    const button = document.createElement("button");
-    button.id = "search-history-delete-item";
-    button.textContent = "X";
-    button.addEventListener("click", function (event) {
-      const city_name = JSON.parse(li.dataset.city).name;
-      appStore.removeCityFromListByName(city_name);
-      li.remove();
-    });
-    li.appendChild(button);
-    elements.searchHistoryList.appendChild(li);
-    setupEventListeners();
-  });
+  elements.cityInput.value = '';
 };
