@@ -214,8 +214,10 @@ const displaySearchHistoryAndSetupEvents = (data) => {
   data.forEach((item) => {
     const li = document.createElement('li');
     li.setAttribute('data-city', JSON.stringify(item));
-    li.textContent = item?.name + ' ';
-    li.addEventListener('click', (event) => {
+    const span = document.createElement('span');
+    span.textContent = item?.name + ' ';
+    li.appendChild(span);
+    span.addEventListener('click', (event) => {
       appStore.setCity(JSON.parse(li.dataset.city).name);
       handleSearch();
     });

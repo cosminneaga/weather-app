@@ -55,22 +55,21 @@ body:has(div.dark) {
     flex-flow: row wrap;
     justify-content: center;
     gap: 10px;
+}
 
-    .item:nth-child(1) {
-        width: 125px;
-        /* border: 1px solid greenyellow; */
-    }
-    .item:nth-child(2) {
-        width: 225px;
-    }
-    .item:nth-child(3) {
-        width: 125px;
-    }
-    .item:nth-child(4) {
-        width: 150px;
-        display: flex;
-        align-items: end;
-    }
+.setting-wrapper .item:nth-child(1) {
+    width: 125px;
+}
+.setting-wrapper > .item:nth-child(2) {
+    width: 225px;
+}
+.setting-wrapper > .item:nth-child(3) {
+    width: 125px;
+}
+.setting-wrapper > .item:nth-child(4) {
+    width: 150px;
+    display: flex;
+    align-items: end;
 }
 
 .setting-wrapper:last-child {
@@ -448,46 +447,46 @@ body:has(div.dark) {
 .search-history-container {
     padding: 5px;
     border: 1px solid white;
-    .search-history-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
+}
 
-        i {
-            color: var(--color-red);
-        }
+.search-history-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
 
-        i:hover {
-            cursor: pointer;
-        }
-    }
+.search-history-container ul {
+    padding-left: 25px;
+    list-style-type: decimal;
+}
 
-    ul {
-        padding-left: 25px;
-        list-style-type: decimal;
-        li {
-            margin: 5px 0;
-            font-size: large;
-            font-weight: bolder;
+.search-history-container ul li {
+    margin: 5px 0;
+    font-size: large;
+    font-weight: bolder;
+}
 
-            i {
-                color: var(--color-red);
-            }
-        }
-        li:hover {
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        button {
-            padding: 4px 6px;
-            background: transparent;
-            outline: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 50%;
-            color: rgb(218, 58, 58);
-            font-size: 20px;
-        }
-    }
+.search-history-container ul li:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.search-history-container button {
+    padding: 4px 6px;
+    background: transparent;
+    outline: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 50%;
+    color: rgb(218, 58, 58);
+    font-size: 20px;
+}
+
+.search-history-container i {
+    color: var(--color-red);
+}
+
+.search-history-container i:hover {
+    cursor: pointer;
 }

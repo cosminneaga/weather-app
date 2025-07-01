@@ -9,7 +9,7 @@ export const convertWindSpeedInKm = (speed) => {
 };
 
 export const convertDateUnixToLocaleTime = (timestamp) => {
-  return dayjs.unix(timestamp).format('HH:MM');
+  return dayjs.unix(timestamp).format('HH:mm');
 };
 
 export const convertVisibilityLength = (value) => {
