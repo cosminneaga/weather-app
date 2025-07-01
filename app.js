@@ -1,7 +1,7 @@
-import * as ui from './modules/ui-controller.js';
-import { appStore } from './modules/stores/index.js';
 import WeatherService from './modules/weather-service.js';
 import LocationService from './modules/location-service.js';
+import * as ui from './modules/ui-controller.js';
+import { appStore } from './modules/stores/index.js';
 import { logger } from './modules/logger.js';
 
 (async function init() {
