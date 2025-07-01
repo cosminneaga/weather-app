@@ -7,6 +7,11 @@ Transformă fiecare zi într-o experiență fără surprize, cu Weather App – 
 ## 🚀 Features
 
 - [x] Arata informatiile despre vreme de la OpenWeather API folosind Vanilla Javascript
+- [x] Tema dark/light
+- [x] Selector pentru limba engleza sau romana
+- [x] Selector pentru unitatile de masura, Celsius, Fahrenheit sau Kelvin
+- [x] Persistenta istoricului si al log-urilor in localStorage
+- [x] Posibilitatea de a descarca log-urile din sistem intr-un fisier tip 'txt'
 
 ## 🛠️ Tech Stack
 
@@ -14,6 +19,7 @@ Transformă fiecare zi într-o experiență fără surprize, cu Weather App – 
 - CSS
 - JavaScript
 - dayjs - JS library to handle datetime
+- remixicons
 
 ## 📦 Instalare
 
@@ -28,7 +34,7 @@ Transformă fiecare zi într-o experiență fără surprize, cu Weather App – 
 
 - [x] Part 1: Fundamente
 - [x] Part 2: API real
-- [ ] Part 3
+- [x] Part 3 Logging System, localStorage, weather by location, error handling
 - [ ] Part 4
 
 ## 👨‍💻 Autor
