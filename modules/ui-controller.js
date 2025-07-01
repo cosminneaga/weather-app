@@ -97,7 +97,7 @@ export const setupEventListeners = () => {
   });
 
   elements.favouritesBtn.addEventListener('click', () => {
-    console.log('favourites clicked');
+    // TODO code to be added at later stage
   });
 
   elements.downloadLogsBtn.addEventListener('click', () => {
@@ -223,7 +223,6 @@ const displaySearchHistoryAndSetupEvents = (data) => {
     });
 
     const button = document.createElement('button');
-    button.id = 'search-history-delete-item';
     button.innerHTML = '<i class="ri-lg ri-close-circle-line"></i>';
     button.addEventListener('click', function (event) {
       appStore.removeFromHistory(JSON.parse(li.dataset.city));

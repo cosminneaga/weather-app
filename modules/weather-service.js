@@ -15,7 +15,6 @@
 import { isValidCity } from '../modules/utils.js';
 import { MOCK_DATA, CONFIG, API_ENDPOINTS } from '../modules/config.js';
 import ErrorHandler from './error/handler.js';
-import Storage from './storage.js';
 import { logger } from './logger.js';
 import { appStore } from './stores/index.js';
 
