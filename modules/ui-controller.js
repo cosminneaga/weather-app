@@ -17,6 +17,7 @@ const elements = {
   cityInput: document.querySelector('#city-input'),
   searchForm: document.querySelector('#search-form'),
   searchBtn: document.querySelector('#search-btn'),
+  downloadLogsBtn: document.querySelector('#download-logs-button'),
   card: document.querySelector('#weather-card'),
   cityName: document.querySelector('#city-name'),
   favouritesBtn: document.querySelector('#favourites-select'),
@@ -97,6 +98,16 @@ export const setupEventListeners = () => {
 
   elements.favouritesBtn.addEventListener('click', () => {
     console.log('favourites clicked');
+  });
+
+  elements.downloadLogsBtn.addEventListener('click', () => {
+    const data = `data:text/json;charset=utf-8,${encodeURIComponent(logger.getLogs())}`;
+    const a = document.createElement('a');
+    a.setAttribute('href', data);
+    a.setAttribute('download', 'logs.txt');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   });
 };
 

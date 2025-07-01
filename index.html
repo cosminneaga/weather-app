@@ -16,37 +16,37 @@
 
       <form class="search-form" id="search-form">
         <input type="text" class="search-input" name="city-input" id="city-input" placeholder="Enter city name" />
-
-        <div class="setting-wrapper">
-          <div class="form-item">
-            <label for="selector-language">Select language</label>
-            <select name="selector-language" id="selector-language" class="custom-select">
-              <option value="en">EN</option>
-              <option value="ro">RO</option>
-            </select>
-          </div>
-          <div class="form-item">
-            <label for="selector-temperature">Select temperature unit</label>
-            <select name="selector-temperature" id="selector-temperature" class="custom-select">
-              <option value="metric">Celcius</option>
-              <option value="imperial">Fahrenheit</option>
-              <option value="standard">Kelvin</option>
-            </select>
-          </div>
-
-          <div class="form-item">
-            <label for="selector-theme">Select theme</label>
-            <select name="selector-theme" id="selector-theme" class="custom-select">
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          </div>
-          
-          <div class="form-item">
-            <button type="submit" class="search-btn" id="search-btn">Search</button>
-          </div>
-        </div>
+        <button type="submit" class="btn" id="search-btn">Search</button>
       </form>
+
+      <div class="setting-wrapper">
+        <div class="item">
+          <label for="selector-language">Select language</label>
+          <select name="selector-language" id="selector-language" class="custom-select">
+            <option value="en">EN</option>
+            <option value="ro">RO</option>
+          </select>
+        </div>
+        <div class="item">
+          <label for="selector-temperature">Select temperature unit</label>
+          <select name="selector-temperature" id="selector-temperature" class="custom-select">
+            <option value="metric">Celcius</option>
+            <option value="imperial">Fahrenheit</option>
+            <option value="standard">Kelvin</option>
+          </select>
+        </div>
+
+        <div class="item">
+          <label for="selector-theme">Select theme</label>
+          <select name="selector-theme" id="selector-theme" class="custom-select">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        <div class="item">
+          <button class="btn" id="download-logs-button">Download Logs</button>
+        </div>
+      </div>
 
       <div class="weather-card" id="weather-card">
         <div class="weather-header">
