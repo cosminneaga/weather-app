@@ -16,20 +16,16 @@
 
       <form class="search-form" id="search-form">
         <input type="text" class="search-input" name="city-input" id="city-input" placeholder="Enter city name" />
-        <button type="submit" class="search-btn" id="search-btn">Search</button>
-      </form>
 
-      <div class="wrapper">
-        <div class="selectors">
-          <div class="selector">
+        <div class="setting-wrapper">
+          <div class="form-item">
             <label for="selector-language">Select language</label>
             <select name="selector-language" id="selector-language" class="custom-select">
               <option value="en">EN</option>
               <option value="ro">RO</option>
             </select>
           </div>
-
-          <div class="selector">
+          <div class="form-item">
             <label for="selector-temperature">Select temperature unit</label>
             <select name="selector-temperature" id="selector-temperature" class="custom-select">
               <option value="metric">Celcius</option>
@@ -38,54 +34,59 @@
             </select>
           </div>
 
-          <div class="selector">
+          <div class="form-item">
             <label for="selector-theme">Select theme</label>
             <select name="selector-theme" id="selector-theme" class="custom-select">
               <option value="light">Light</option>
               <option value="dark">Dark</option>
             </select>
           </div>
+          
+          <div class="form-item">
+            <button type="submit" class="search-btn" id="search-btn">Search</button>
+          </div>
         </div>
-        <div class="weather-card" id="weather-card">
-          <div class="weather-header">
-            <span class="city-name" id="city-name">Bucharest</span>
-            <i class="ri-2x ri-heart-3-line" id="favourites-select"></i>
-          </div>
-          <div class="weather-main">
-            <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
-            <span class="temperature" id="temperature">22.4°C</span>
-          </div>
-          <div class="weather-desc" id="description"></div>
-          <div class="weather-details">
-            <div id="humidity"><span>Humidity</span>: <span>67%</span></div>
-            <div id="pressure"><span>Pressure</span>: <span>1016 hPa</span></div>
-            <div id="wind"><span>Wind</span>: <span>20 km/h</span></div>
-            <div id="visibility"><span>Visibility</span>: <span>10 km</span></div>
-            <div id="sunrise"><span>Sunrise</span>: <span>05:16</span></div>
-            <div id="sunset"><span>Sunset</span>: <span>21:21</span></div>
-          </div>
+      </form>
 
-          <div class="search-history-container" id="search-history-container">
-            <div class="search-history-title">
-              <h2 id="search-history-title-heading">Search History</h2>
-              <i class="ri-2x ri-delete-bin-3-line" id="search-history-clear-button"></i>
-            </div>
-            <ul class="weather-search-history-list" id="weather-search-history-list"></ul>
-          </div>
+      <div class="weather-card" id="weather-card">
+        <div class="weather-header">
+          <span class="city-name" id="city-name">Bucharest</span>
+          <i class="ri-2x ri-heart-3-line" id="favourites-select"></i>
+        </div>
+        <div class="weather-main">
+          <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
+          <span class="temperature" id="temperature">22.4°C</span>
+        </div>
+        <div class="weather-desc" id="description"></div>
+        <div class="weather-details">
+          <div id="humidity"><span>Humidity</span>: <span>67%</span></div>
+          <div id="pressure"><span>Pressure</span>: <span>1016 hPa</span></div>
+          <div id="wind"><span>Wind</span>: <span>20 km/h</span></div>
+          <div id="visibility"><span>Visibility</span>: <span>10 km</span></div>
+          <div id="sunrise"><span>Sunrise</span>: <span>05:16</span></div>
+          <div id="sunset"><span>Sunset</span>: <span>21:21</span></div>
+        </div>
 
-          <div class="loader-overlay hidden" id="loading">
-            <div class="loader-spinner"></div>
-            <br />
-            <span id="loading-message"></span>
+        <div class="search-history-container" id="search-history-container">
+          <div class="search-history-title">
+            <h2 id="search-history-title-heading">Search History</h2>
+            <i class="ri-2x ri-delete-bin-3-line" id="search-history-clear-button"></i>
           </div>
+          <ul class="weather-search-history-list" id="weather-search-history-list"></ul>
+        </div>
 
-          <div class="error-overlay hidden" id="error-container">
-            <div class="error-box">
-              <button class="error-close" id="error-close">&times;</button>
-              <span class="error-icon">!</span>
-              <div class="error-title"></div>
-              <div class="error-message" id="error-message"></div>
-            </div>
+        <div class="loader-overlay hidden" id="loading">
+          <div class="loader-spinner"></div>
+          <br />
+          <span id="loading-message"></span>
+        </div>
+
+        <div class="error-overlay hidden" id="error-container">
+          <div class="error-box">
+            <button class="error-close" id="error-close">&times;</button>
+            <span class="error-icon">!</span>
+            <div class="error-title"></div>
+            <div class="error-message" id="error-message"></div>
           </div>
         </div>
       </div>
