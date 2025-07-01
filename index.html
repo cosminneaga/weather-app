@@ -5,82 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App - Generatia Tech - 2025</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="./styles/index.css" />
+    <link rel="stylesheet" href="./styles/remix/remixicon.css" />
     <script type="module" src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script type="module" src="./app.js"></script>
   </head>
   <body>
-    <div class="container" id="app">
+    <div class="container hidden" id="app">
       <h1 class="app-title">Weather App</h1>
 
       <form class="search-form" id="search-form">
         <input type="text" class="search-input" name="city-input" id="city-input" placeholder="Enter city name" />
-        <button type="submit" class="search-btn" id="search-btn">Search</button>
+        <button type="submit" class="btn" id="search-btn">Search</button>
       </form>
 
-      <div class="wrapper">
-        <div class="selectors">
-          <div class="selector">
-            <label for="selector-language">Select language</label>
-            <select name="selector-language" id="selector-language" class="custom-select">
-              <option value="ro">RO</option>
-              <option value="en">EN</option>
-            </select>
-          </div>
-
-          <div class="selector">
-            <label for="selector-temperature">Select temperature unit</label>
-            <select name="selector-temperature" id="selector-temperature" class="custom-select">
-              <option value="metric">Celcius</option>
-              <option value="imperial">Fahrenheit</option>
-              <option value="standard">Kelvin</option>
-            </select>
-          </div>
-
-          <div class="selector">
-            <label for="selector-theme">Select theme</label>
-            <select name="selector-theme" id="selector-theme" class="custom-select">
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
-            </select>
-          </div>
+      <div class="setting-wrapper">
+        <div class="item">
+          <label for="selector-language">Select language</label>
+          <select name="selector-language" id="selector-language" class="custom-select">
+            <option value="en">EN</option>
+            <option value="ro">RO</option>
+          </select>
         </div>
-        <div class="weather-card" id="weather-card">
-          <div class="weather-header">
-            <span class="city-name" id="city-name"></span>
-          </div>
-          <div class="weather-main">
-            <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
-            <span class="temperature" id="temperature"></span>
-          </div>
-          <div class="weather-desc" id="description"></div>
-          <div class="weather-details">
-            <div id="humidity"><span>Humidity</span>: <span></span></div>
-            <div id="pressure"><span>Pressure</span>: <span></span></div>
-            <div id="wind"><span>Wind</span>: <span></span></div>
-            <div id="visibility"><span>Visibility</span>: <span></span></div>
-            <div id="sunrise"><span>Sunrise</span>: <span></span></div>
-            <div id="sunset"><span>Sunset</span>: <span></span></div>
-          </div>
+        <div class="item">
+          <label for="selector-temperature">Select temperature unit</label>
+          <select name="selector-temperature" id="selector-temperature" class="custom-select">
+            <option value="metric">Celcius</option>
+            <option value="imperial">Fahrenheit</option>
+            <option value="standard">Kelvin</option>
+          </select>
+        </div>
 
-          <div class="search-history-container">
-            <h2>Search History</h2>
-            <ul class="weather-search-history-list" id="weather-search-history-list"></ul>
-          </div>
+        <div class="item">
+          <label for="selector-theme">Select theme</label>
+          <select name="selector-theme" id="selector-theme" class="custom-select">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        <div class="item">
+          <button class="btn" id="download-logs-button">Download Logs</button>
+        </div>
+      </div>
 
-          <div class="loader-overlay hidden" id="loading">
-            <div class="loader-spinner"></div>
-            <br />
-            <span id="loading-message"></span>
-          </div>
+      <div class="weather-card" id="weather-card">
+        <div class="weather-header">
+          <span class="city-name" id="city-name"></span>
+          <i class="ri-2x ri-heart-3-line" id="favourites-select"></i>
+        </div>
+        <div class="weather-main">
+          <img class="weather-icon" id="icon" alt="weather-icon" src="./icons/sun.png" />
+          <span class="temperature" id="temperature"></span>
+        </div>
+        <div class="weather-desc" id="description"></div>
+        <div class="weather-details">
+          <div id="humidity"><span>Humidity</span>: <span></span></div>
+          <div id="pressure"><span>Pressure</span>: <span></span></div>
+          <div id="wind"><span>Wind</span>: <span></span></div>
+          <div id="visibility"><span>Visibility</span>: <span></span></div>
+          <div id="sunrise"><span>Sunrise</span>: <span></span></div>
+          <div id="sunset"><span>Sunset</span>: <span></span></div>
+        </div>
 
-          <div class="error-overlay hidden" id="error-container">
-            <div class="error-box">
-              <button class="error-close" id="error-close">&times;</button>
-              <span class="error-icon">!</span>
-              <div class="error-title"></div>
-              <div class="error-message" id="error-message"></div>
-            </div>
+        <div class="search-history-container" id="search-history-container">
+          <div class="search-history-title">
+            <h2 id="search-history-title-heading">Search History</h2>
+            <i class="ri-2x ri-delete-bin-3-line" id="search-history-clear-button"></i>
+          </div>
+          <ul class="weather-search-history-list" id="weather-search-history-list"></ul>
+        </div>
+
+        <div class="loader-overlay hidden" id="loading">
+          <div class="loader-spinner"></div>
+          <br />
+          <span id="loading-message"></span>
+        </div>
+
+        <div class="error-overlay hidden" id="error-container">
+          <div class="error-box">
+            <button class="error-close" id="error-close">&times;</button>
+            <span class="error-icon">!</span>
+            <div class="error-title"></div>
+            <div class="error-message" id="error-message"></div>
           </div>
         </div>
       </div>

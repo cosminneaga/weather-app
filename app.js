@@ -1,34 +1,35 @@
-import * as ui from "./modules/ui-controller.js";
-import AppStore from "./modules/stores/index.js";
-import WeatherService from "./modules/weather-service.js";
-import ErrorHandler from "./modules/error-handler.js";
-import { getCoords } from "./modules/location-service.js";
+import WeatherService from './modules/weather-service.js';
+import LocationService from './modules/location-service.js';
+import * as ui from './modules/ui-controller.js';
+import { appStore } from './modules/stores/index.js';
+import { logger } from './modules/logger.js';
 
 (async function init() {
-  let city,
-    appStore = null;
-  const weatherService = new WeatherService();
-  if (!localStorage.getItem("AppStore")) {
-    const coords = await getCoords();
-    city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, "ro", "metric");
-    appStore = new AppStore(city.name, "metric", "ro", "light");
-  } else {
-    appStore = new AppStore();
-    city = await weatherService.getCurrentWeather(appStore.getCity(), appStore.getLang(), appStore.getUnit());
+  logger.info('App initialising started...');
+  ui.setupEventListeners();
+
+  let city;
+  const unit = appStore.getUnit();
+  const lang = appStore.getLang();
+  const theme = appStore.getTheme();
+  try {
+    const weatherService = new WeatherService();
+    const locationService = new LocationService();
+    const coords = await locationService.executeWithFallback();
+    city = await weatherService.getWeatherByCoords(coords.latitude, coords.longitude, lang, unit);
+    appStore.setCity(city.name);
+    ui.displayWeather(city, unit, lang);
+  } catch (err) {
+    ui.handleSearch();
   }
 
-  ui.setupEventListeners();
-  ui.displayWeather(city, appStore.getUnit(), appStore.getLang(), weatherService.getSearched());
-  ui.setupSelectors(appStore.getLang(), appStore.getUnit(), appStore.getTheme());
-  ui.setTheme(appStore.getTheme());
+  ui.setupSelectors(lang, unit, theme);
+  ui.setTheme(theme);
+  logger.info('App intialised successfully...');
 })();
 
 /* ---------------------------------- NOTES --------------------------------- */
 /**
- * controale pentru unitatile de masura (C/F, km/h, m/s, etc.)
  * adauga un buton de refresh pentru a reface datele
- * adauga un buton de reset pentru a reveni la orasul initial
- * adauga un buton de favorite pentru a salva orasul curent in localStorage
- * adauga un buton de stergere a orasului din favorite
  * adauga un buton de stergere a textului din input-uri
  */

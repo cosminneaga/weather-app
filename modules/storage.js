@@ -1,3 +1,13 @@
+
+/**
+ * Storage class for managing and persisting data in localStorage.
+ * Provides array-like operations and utility methods for manipulating stored datasets.
+ *
+ * @class
+ * @example
+ * const storage = new Storage({ favorites: [] });
+ * storage.push({ city: 'London' }, 'favorites');
+ */
 export default class Storage {
   constructor(data) {
     const storage = JSON.parse(localStorage.getItem(this.constructor.name));
@@ -17,6 +27,8 @@ export default class Storage {
    * @param {string} name - The key name of the array in the storage object.
    */
   unshift(data, name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+
     this.data[name].unshift(data);
     this.set({ [name]: this.data[name] });
   }
@@ -28,7 +40,74 @@ export default class Storage {
    * @param {string} name - The name of the array in the storage to which the data will be added.
    */
   push(data, name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+
     this.data[name].push(data);
+    this.set({ [name]: this.data[name] });
+  }
+
+  /**
+   * Removes the first element from the array stored under the given name in the data object,
+   * updates the data, and persists the change.
+   *
+   * @param {string} name - The key of the array in the data object to shift.
+   */
+  shift(name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+
+    this.data[name].shift();
+    this.set({ [name]: this.data[name] });
+  }
+
+  /**
+   * Removes the last element from the array stored under the specified name in the data object,
+   * then updates the storage with the modified array.
+   *
+   * @param {string} name - The key of the array in the data object to pop an element from.
+   */
+  pop(name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+    
+    this.data[name].pop();
+    this.set({ [name]: this.data[name] });
+  }
+  
+  /**
+   * Removes one element at the specified index from the named dataset array.
+   *
+   * @param {number} index - The index of the element to remove from the array.
+   * @param {string} name - The name of the dataset (property in `this.data`) to modify.
+   * @throws {TypeError} If the specified dataset is not an array.
+   */
+  splice(index, name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+    
+    const [data] = this.data[name].splice(index, 1);
+    this.set({ [name]: this.data[name] });
+    return data;
+  }
+
+  /**
+   * Moves the element at the specified index in the named dataset to the top (beginning) of the array.
+   *
+   * @param {number} index - The index of the element to move to the top.
+   * @param {string} name - The name of the dataset (property in `this.data`) to operate on.
+   * @throws {TypeError} If the specified dataset is not an array.
+   */
+  moveToTop(index, name) {
+    if (!Array.isArray(this.data[name])) throw new TypeError('The specified dataset should be an array.');
+    const data = this.splice(index, name);
+    this.unshift(data, name);
+  }
+
+  /**
+   * Clears and resets the stored data for the specified key.
+   *
+   * @param {string} name - The key/name of the data to clear.
+   * @param {*} data - The new data to set for the specified key.
+   */
+  clear(data, name) {
+    this.data[name] = data;
     this.set({ [name]: this.data[name] });
   }
 
@@ -46,7 +125,10 @@ export default class Storage {
       return false;
     }
 
-    return true;
+    return {
+      exists: true,
+      index: this.data[name].indexOf(item)
+    };
   }
 
   /**
@@ -60,6 +142,12 @@ export default class Storage {
     this.set({ [name]: this.data[name] });
   }
 
+  /**
+   * Retrieves the value associated with the specified name from the storage data.
+   *
+   * @param {string} name - The key of the item to retrieve.
+   * @returns {*} The value associated with the given name, or undefined if not found.
+   */
   getItem(name) {
     return this.data[name];
   }
