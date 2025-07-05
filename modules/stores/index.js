@@ -1,10 +1,10 @@
 
 import Storage from '../storage.js';
-import { CONFIG } from '../config.js';
+import { CONFIG, getTranslation } from '../config.js';
 import { AppStoreError } from '../error/types.js';
 
 export default class AppStore extends Storage {
-  constructor(city, unit, lang, theme, favourites = [], history = []) {
+  constructor(city, unit, lang, theme, details = '', favourites = [], history = []) {
     super({
       city: city,
       unit: unit,
@@ -13,7 +13,15 @@ export default class AppStore extends Storage {
       favourites: favourites,
       history: history,
       favouritesLimit: 10,
-      historyLimit: 10
+      historyLimit: 10,
+      details: details,
+      benchmark: {
+        appLoad: 0,
+        apiCall: 0,
+        uiUpdate: 0,
+        historyLoad: 0,
+      },
+      timestamp: dayjs()
     });
   }
 
@@ -58,6 +66,14 @@ export default class AppStore extends Storage {
   }
 
   /**
+   * Retrieves the details from the data object.
+   * @returns {Object} The details stored in the data object.
+   */
+  getDetails() {
+    return this.data.details;
+  }
+
+  /**
    * Retrieves the list of favourite items from the store data.
    *
    * @returns {Array} An array containing the user's favourite items.
@@ -76,12 +92,41 @@ export default class AppStore extends Storage {
   }
 
   /**
+   * Retrieves the benchmark data from the store.
+   *
+   * @returns {*} The benchmark data stored in this.data.benchmark.
+   */
+  getBenchmark() {
+    return this.data.benchmark;
+  }
+
+  /**
+   * Returns the current timestamp stored in the data object.
+   *
+   * @returns {string} The timestamp value.
+   */
+  getTimestamp() {
+    return this.data.timestamp;
+  }
+
+  /**
+   * Returns a human-readable string representing the time elapsed from the stored timestamp to now.
+   *
+   * @returns {string} A relative time string (e.g., "3 hours ago").
+   */
+  getToNow() {
+    dayjs.locale(appStore.getLang());
+    return dayjs().to(this.data.timestamp);
+  }
+
+  /**
    * Sets the current city in the store and updates the store's state.
    *
    * @param {string} city - The name of the city to set.
    */
   setCity(city) {
     this.setItem(city, 'city');
+    this.setTimestampToNow();
   }
 
   /**
@@ -100,6 +145,7 @@ export default class AppStore extends Storage {
    */
   setLang(lang) {
     this.setItem(lang, 'lang');
+    this.setDetails(this.getDetails().type);
   }
 
   /**
@@ -111,6 +157,66 @@ export default class AppStore extends Storage {
     this.setItem(theme, 'theme');
   }
 
+  /**
+   * Sets the provided details in the store.
+   *
+   * @param {Object} details - The details object to be stored.
+   */
+  setDetails(type) {
+    if (!CONFIG.DATA_TYPE.includes(type)) throw new AppStoreError('City details type must be one of the followings: "default", "ip", "gps"');
+
+    const lang = this.getLang();
+    const translation = getTranslation(lang);
+
+    this.setItem({
+      type: type,
+      message: translation.cityDetails[type]
+    }, 'details');
+  }
+
+  setTimestampToNow() {
+    this.data.timestamp = dayjs();
+  }
+
+  /**
+   * Increments the app load benchmark counter by 1.
+   *
+   * @method
+   * @returns {void}
+   */
+  countUpAppLoad() {
+    this.data.benchmark.appLoad += 1;
+  }
+
+  /**
+   * Increments the API call count in the benchmark data object by 1.
+   *
+   * @method
+   * @returns {void}
+   */
+  countUpApiCall() {
+    this.data.benchmark.apiCall += 1;
+  }
+
+  /**
+   * Increments the UI update benchmark counter by 1.
+   *
+   * @method
+   * @returns {void}
+   */
+  countUpUiUpdate() {
+    this.data.benchmark.uiUpdate += 1;
+  }
+
+  /**
+   * Increments the `historyLoad` counter in the `benchmark` data object by 1.
+   *
+   * @function
+   * @returns {void}
+   */
+  countUpHistoryLoad() {
+    this.data.benchmark.historyLoad += 1;
+  }
 
   /**
    * Adds a data item to the favourites list.
@@ -193,4 +299,10 @@ export default class AppStore extends Storage {
  * @param {string} CONFIG.DEFAULT.LANG - The default language for the app.
  * @param {string} CONFIG.DEFAULT.THEME - The default theme for the app (e.g., light or dark).
  */
-export const appStore = new AppStore(CONFIG.DEFAULT.CITY, CONFIG.DEFAULT.UNIT, CONFIG.DEFAULT.LANG, CONFIG.DEFAULT.THEME);
+export const appStore = new AppStore(
+  CONFIG.DEFAULT.CITY, 
+  CONFIG.DEFAULT.UNIT, 
+  CONFIG.DEFAULT.LANG, 
+  CONFIG.DEFAULT.THEME,
+  getTranslation(CONFIG.DEFAULT.LANG).cityDetails.default,
+);

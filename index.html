@@ -7,7 +7,10 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="./styles/index.css" />
     <link rel="stylesheet" href="./styles/remix/remixicon.css" />
-    <script type="module" src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/dayjs.min.js"></script>
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/plugin/relativeTime.min.js"></script>
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/locale/ro.min.js"></script>
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/locale/en.min.js"></script>
     <script type="module" src="./app.js"></script>
   </head>
   <body>
@@ -43,14 +46,17 @@
             <option value="dark">Dark</option>
           </select>
         </div>
-        <div class="item">
+        <div class="item hidden">
           <button class="btn" id="download-logs-button">Download Logs</button>
         </div>
       </div>
 
       <div class="weather-card" id="weather-card">
         <div class="weather-header">
-          <span class="city-name" id="city-name"></span>
+          <div>
+            <span class="city-name" id="city-name"></span>
+            <i class="city-details" id="city-details"></i>
+          </div>
           <i class="ri-2x ri-heart-3-line" id="favourites-select"></i>
         </div>
         <div class="weather-main">

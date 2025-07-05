@@ -5,7 +5,8 @@
  * @class
  */
 import { LocationServiceError, LocationServiceAPIError, LocationServiceGPSError } from './error/types.js';
-import {logger} from './logger.js';
+import { logger } from './logger.js';
+import { appStore } from './stores/index.js';
 
 export default class LocationService {
   constructor() {
@@ -44,6 +45,7 @@ export default class LocationService {
         accuracy: 'city',
       };
       logger.info('[LocationService.getByAPI] Location retrieved using API', result);
+      appStore.countUpApiCall();
       return result;
     } catch (error) {
       logger.error(`[LocationService.getByAPI] API location failed: ${error.message}`, error);

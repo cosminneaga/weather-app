@@ -121,6 +121,15 @@ body:has(div.dark) {
     border-radius: 6px;
 }
 
+.weather-header > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.weather-header .city-details {
+    font-size: 14px;
+}
+
 .weather-header {
     display: flex;
     flex-direction: row;
@@ -138,7 +147,6 @@ body:has(div.dark) {
     font-size: 2rem;
     font-weight: bold;
     letter-spacing: 1px;
-    margin-bottom: 18px;
 }
 
 .weather-main {

@@ -42,6 +42,7 @@ export default class WeatherService {
       const json = await request.json();
       appStore.addToHistory(json);
       logger.info('[getCurrentWeather] City data has been retrieved and added to history', json);
+      appStore.countUpApiCall();
       return json;
     } catch (error) {
       logger.error('[getCurrentWeather] MOCK_DATA has been loaded to UI', error);
@@ -75,6 +76,7 @@ export default class WeatherService {
       const json = await request.json();
       appStore.addToHistory(json);
       logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
+      appStore.countUpApiCall();
       return json;
     } catch (error) {
       logger.error('[getWeatherByCoords] MOCK_DATA has been loaded to UI', error);
