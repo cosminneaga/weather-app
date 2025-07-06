@@ -25,8 +25,8 @@ Turn every day into a surprise-free experience with Weather App – the weather 
 ## Frontend
 
 - **Vanilla Javascript (ES6+)** - Modular architecture
--- dayjs
--- remixicons
+- - dayjs
+- - remixicons
 - **CSS3** - Responsive design
 - **HTML5** - Semantic structure
 
@@ -58,7 +58,35 @@ Turn every day into a surprise-free experience with Weather App – the weather 
 - Click on menu option `Open with LiverServer`
 - Visualise in your browser at [http://localhost:5500/index.html](http://localhost:5500/index.html)
 
+Edit `modules/config.js` and add your own API key in `CONFIG.API_KEY`
+
 ## 🚀 Demo și Screenshots
+
+- Theme
+- - Dark mode
+![Dark mode](./screenshots/dark.png)
+- - Light mode
+![Light mode](./screenshots/light.png)
+
+- Language
+- - English
+![English](./screenshots/english.png)
+- - Romanian
+![Romanian](./screenshots/romanian.png)
+
+- Units
+- - Celcius
+![Celcius](./screenshots/english.png)
+- - Fahrenheit
+![Fahrenheit](./screenshots/fahrenheit.png)
+- - Kelvin
+![Kelvin](./screenshots/kelvin.png)
+
+- Responsiveness
+- - Portrait
+![Portrait](./screenshots/responsive.png) 
+- - Landscape
+![Landscape](./screenshots/responsive_landscape.png)
 
 
 # 🗺️ Roadmap
