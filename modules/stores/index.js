@@ -76,7 +76,6 @@ export default class AppStore extends Storage {
 
   /**
    * Retrieves the list of favourite items from the store data.
-   *
    * @returns {Array} An array containing the user's favourite items.
    */
   getFavourites() {
@@ -85,7 +84,6 @@ export default class AppStore extends Storage {
 
   /**
    * Retrieves the history data from the store.
-   *
    * @returns {Array} The history of weather data.
    */
   getHistory() {
@@ -94,7 +92,6 @@ export default class AppStore extends Storage {
 
   /**
    * Retrieves the benchmark data from the store.
-   *
    * @returns {*} The benchmark data stored in this.data.benchmark.
    */
   getBenchmark() {
@@ -103,7 +100,6 @@ export default class AppStore extends Storage {
 
   /**
    * Returns the current timestamp stored in the data object.
-   *
    * @returns {string} The timestamp value.
    */
   getTimestamp() {
@@ -112,7 +108,6 @@ export default class AppStore extends Storage {
 
   /**
    * Returns a human-readable string representing the time elapsed from the stored timestamp to now.
-   *
    * @returns {string} A relative time string (e.g., "3 hours ago").
    */
   getToNow() {
@@ -122,7 +117,6 @@ export default class AppStore extends Storage {
 
   /**
    * Retrieves the maximum age value from the data store.
-   *
    * @returns {number} The maximum age stored in the data.
    */
   getMaxAge() {
@@ -131,7 +125,6 @@ export default class AppStore extends Storage {
 
   /**
    * Retrieves the city data from the store.
-   *
    * @returns {Object} The city data object.
    */
   getCityData() {
@@ -141,7 +134,6 @@ export default class AppStore extends Storage {
   /**
    * Returns a human-readable relative time string from the city's timestamp to now.
    * Sets the locale based on the current language.
-   *
    * @returns {string} A string representing the time elapsed since the city's timestamp (e.g., "3 hours ago").
    */
   getCityTimestampToNow() {
@@ -150,14 +142,19 @@ export default class AppStore extends Storage {
   }
 
   findInHistoryByName(cityName) {
-    const city = this.getHistory().find(city => city.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === cityName);
+    const city = this.getHistory().find(city => city.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() == cityName.toLowerCase());
+    this.setItem(city, 'cityData');
+    return city;
+  }
+
+  findInHistoryByCoords(lat, lon) {    
+    const city = this.getHistory().find(city => city.coord.lat === lat && city.coord.lon === lon);
     this.setItem(city, 'cityData');
     return city;
   }
 
   /**
    * Sets the current city in the store and updates the store's state.
-   *
    * @param {string} city - The name of the city to set.
    */
   setCity(city) {
@@ -166,7 +163,6 @@ export default class AppStore extends Storage {
 
   /**
    * Sets the unit of measurement for weather data and updates the store.
-   *
    * @param {string} unit - The unit to set (e.g., 'metric', 'imperial').
    */
   setUnit(unit) {
@@ -175,7 +171,6 @@ export default class AppStore extends Storage {
 
   /**
    * Sets the application's language.
-   *
    * @param {string} lang - The language code to set (e.g., 'en', 'ro').
    */
   setLang(lang) {
@@ -185,13 +180,16 @@ export default class AppStore extends Storage {
 
   /**
    * Sets the application's theme and updates the store with the new theme value.
-   *
    * @param {string} theme - The name of the theme to set (e.g., 'light', 'dark').
    */
   setTheme(theme) {
     this.setItem(theme, 'theme');
   }
 
+  /**
+   * Retrieves the message details from the city data.
+   * @returns {string} The message from the city details.
+   */
   getDetails() {
     return this.data.cityData.details.message;
   }
@@ -217,21 +215,19 @@ export default class AppStore extends Storage {
 
   /**
    * Stores city data along with the current timestamp.
-   *
    * @param {Object} cityData - The data object containing information about the city.
    * @returns {void}
    */
   setCityData(cityData) {
     this.setItem({
       ...cityData,
-      timestamp: dayjs(),
+      timestamp: cityData.timestamp ? cityData.timestamp : dayjs(),
       details: { ...this.generateDetails(cityData.source) }
     }, 'cityData');
   }
 
   /**
    * Increments the app load benchmark counter by 1.
-   *
    * @method
    * @returns {void}
    */
@@ -241,7 +237,6 @@ export default class AppStore extends Storage {
 
   /**
    * Increments the API call count in the benchmark data object by 1.
-   *
    * @method
    * @returns {void}
    */
@@ -251,7 +246,6 @@ export default class AppStore extends Storage {
 
   /**
    * Increments the UI update benchmark counter by 1.
-   *
    * @method
    * @returns {void}
    */
@@ -261,8 +255,7 @@ export default class AppStore extends Storage {
 
   /**
    * Increments the `historyLoad` counter in the `benchmark` data object by 1.
-   *
-   * @function
+   * @method
    * @returns {void}
    */
   countUpHistoryLoad() {
@@ -303,7 +296,11 @@ export default class AppStore extends Storage {
     if (exists) {
       return this.moveToTop(exists.index, 'history');
     }
-    this.unshift(data, 'history');
+    this.unshift({
+      ...data,
+      timestamp: data.timestamp ? data.timestamp : dayjs(),
+      details: { ...this.generateDetails(data.source) }
+    }, 'history');
   }
 
   /**

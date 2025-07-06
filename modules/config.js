@@ -74,6 +74,7 @@ export const CONFIG = {
   },
   CACHE: {
     CITY: 10 * 60 * 1000,
+    // CITY: 120000,
   }
 };
 

@@ -33,12 +33,8 @@ export default class WeatherService {
       const cityWithoutDiacritics = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler('CITY_INVALID').throw();
 
-      const history = appStore.findInHistoryByName(cityWithoutDiacritics);
-      if (history) {
-        
-      appStore.setCityData({ ...history });
-        return history;
-      }
+      const history = this._findInHistory(cityWithoutDiacritics);
+      if (history) return history;
 
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
@@ -50,12 +46,10 @@ export default class WeatherService {
 
       appStore.addToHistory({
         ...json,
-        timestamp: dayjs(),
         source: 'api',
       });
       appStore.setCityData({
         ...json,
-        timestamp: dayjs(),
         source: 'api',
       });
       logger.info('[getCurrentWeather] City data has been retrieved and added to history', json);
@@ -89,6 +83,9 @@ export default class WeatherService {
    */
   async getWeatherByCoords(latitude, longitude, lang, unit, source) {
     try {
+      const history = this._findInHistory(latitude, longitude);
+      if (history) return history;
+
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { lat: latitude, lon: longitude, lang: lang, units: unit })
       );
@@ -103,7 +100,6 @@ export default class WeatherService {
       });
       appStore.setCityData({
         ...json,
-        timestamp: dayjs(),
         source: source,
       });
       logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
@@ -159,11 +155,30 @@ export default class WeatherService {
     return url.toString();
   }
 
-  getSearched() {
-    return this.getItem('searched');
-  }
+  _findInHistory(...args) {
+    if (args.length < 1 && args.length > 2) new ErrorHandler('GENERAL').throw();
 
-  getFavourites() {
-    return this.getItem('favourites');
+    let history;
+    switch (args.length) {
+      case 1:
+        history = appStore.findInHistoryByName(args[0]);
+        break;
+      case 2:
+        args = [parseFloat(args[0].toFixed(4)), parseFloat(args[1].toFixed(4))]
+        history = appStore.findInHistoryByCoords(args[0], args[1]);
+        break;
+    }
+    
+    if (history) {
+      if (Math.abs(dayjs(history.timestamp).diff(dayjs())) >= appStore.getMaxAge()) {
+        appStore.removeFromHistory(history);
+        return undefined;
+      }
+      
+      appStore.setCityData({ ...history });
+      appStore.addToHistory(history);
+    }
+
+    return history;
   }
 }

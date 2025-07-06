@@ -23,6 +23,7 @@ const elements = {
   cityName: document.querySelector('#city-name'),
   cityDetails: document.querySelector('#city-details'),
   favouritesBtn: document.querySelector('#favourites-select'),
+  restartBtn: document.querySelector('#restart'),
   icon: document.querySelector('#icon'),
   temperature: document.querySelector('#temperature'),
   description: document.querySelector('#description'),
@@ -74,7 +75,7 @@ export const setupEnvironmentElements = () => {
 
 export const setupTimers = () => {
   setInterval(() => {
-    elements.cityDetails.textContent = `${appStore.getDetails().message} -- ${appStore.getCityTimestampToNow()}`;
+    elements.cityDetails.textContent = `${appStore.getDetails()} -- ${appStore.getCityTimestampToNow()}`;
   }, CONFIG.TIMER.WEATHER);
 };
 
@@ -121,6 +122,10 @@ export const setupEventListeners = () => {
   });
 
   elements.favouritesBtn.addEventListener('click', () => {
+    // TODO code to be added at later stage
+  });
+
+  elements.restartBtn.addEventListener('click', () => {
     // TODO code to be added at later stage
   });
 

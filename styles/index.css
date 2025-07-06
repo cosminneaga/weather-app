@@ -121,25 +121,31 @@ body:has(div.dark) {
     border-radius: 6px;
 }
 
-.weather-header > div {
+.weather-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    i:hover {
+        cursor: pointer;
+        color: yellow;
+    }
+}
+
+.weather-header div:nth-child(1) {
     display: flex;
     flex-direction: column;
 }
 
-.weather-header .city-details {
-    font-size: 14px;
-}
-
-.weather-header {
+.weather-header div:nth-child(2) {
     display: flex;
     flex-direction: row;
-    align-items: baseline;
-    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
 
-    i#favourites-select:hover {
-        cursor: pointer;
-        color: yellow;
-    }
+.weather-header .city-details {
+    font-size: 14px;
 }
 
 .weather-header .city-name {
