@@ -83,10 +83,10 @@ Edit `modules/config.js` and add your own API key in `CONFIG.API_KEY`
 ![Kelvin](./screenshots/kelvin.png)
 
 - Responsiveness
-- - Portrait
-![Portrait](./screenshots/responsive.png) 
 - - Landscape
 ![Landscape](./screenshots/responsive_landscape.png)
+- - Portrait
+![Portrait](./screenshots/responsive.png) 
 
 
 # 🗺️ Roadmap
