@@ -163,7 +163,6 @@ export default class WeatherService {
         history = appStore.findInHistoryByCoords(args[0], args[1]);
         break;
     }
-    console.log(args, history)
     
     if (history) {
       if (Math.abs(dayjs(history.timestamp).diff(dayjs())) >= appStore.getMaxAge()) {
