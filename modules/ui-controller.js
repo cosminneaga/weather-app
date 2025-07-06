@@ -96,14 +96,14 @@ export const setupEventListeners = () => {
   elements.selector.language.select.addEventListener('change', async (event) => {
     appStore.setLang(event.target.value);
     logger.info('Language changed', appStore.getAll());
-    await handleSearch();
+    await handleSearch(false);
     appStore.countUpUiUpdate();
   });
 
   elements.selector.temperature.select.addEventListener('change', async (event) => {
     appStore.setUnit(event.target.value);
     logger.info('Unit changed', appStore.getAll());
-    await handleSearch();
+    await handleSearch(false);
     appStore.countUpUiUpdate();
   });
 
