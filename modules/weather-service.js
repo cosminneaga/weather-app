@@ -28,10 +28,15 @@ export default class WeatherService {
    * @param {string} unit - The unit system for temperature ('metric', 'imperial', etc.).
    * @returns {Promise<Object>} The weather data as a JSON object. Returns fallback data with `isFallback: true` if an error occurs.
    */
-  async getCurrentWeather(city, lang, unit) {
+  async getCurrentWeather(city, lang, unit, cacheEnabled = true) {
     try {
       const cityWithoutDiacritics = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler('CITY_INVALID').throw();
+
+      if (cacheEnabled) {
+        const history = this._findInHistory(cityWithoutDiacritics);
+        if (history) return history;
+      }
 
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
@@ -40,11 +45,25 @@ export default class WeatherService {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      appStore.addToHistory(json);
+
+      appStore.addToHistory({
+        ...json,
+        source: 'api',
+      });
+      appStore.setCityData({
+        ...json,
+        source: 'api',
+      });
       logger.info('[getCurrentWeather] City data has been retrieved and added to history', json);
+      appStore.countUpApiCall();
+
       return json;
     } catch (error) {
       logger.error('[getCurrentWeather] MOCK_DATA has been loaded to UI', error);
+      appStore.setCityData({
+        ...MOCK_DATA,
+        source: 'default'
+      });
 
       return {
         ...MOCK_DATA,
@@ -64,8 +83,13 @@ export default class WeatherService {
    * @param {string} unit - The unit system for temperature (e.g., 'metric', 'imperial').
    * @returns {Promise<Object>} The weather data as a JSON object. If an error occurs, returns fallback mock data with error details.
    */
-  async getWeatherByCoords(latitude, longitude, lang, unit) {
+  async getWeatherByCoords(latitude, longitude, lang, unit, source, cacheEnabled = true) {
     try {
+      if (cacheEnabled) {
+        const history = this._findInHistory(latitude, longitude);
+        if (history) return history;
+      }
+
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { lat: latitude, lon: longitude, lang: lang, units: unit })
       );
@@ -73,11 +97,18 @@ export default class WeatherService {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      appStore.addToHistory(json);
+      appStore.addToHistory({ ...json, source: source });
+      appStore.setCityData({ ...json, source: source });
       logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
+      appStore.countUpApiCall();
+
       return json;
     } catch (error) {
       logger.error('[getWeatherByCoords] MOCK_DATA has been loaded to UI', error);
+      appStore.setCityData({
+        ...MOCK_DATA,
+        source: 'default'
+      })
 
       return {
         ...MOCK_DATA,
@@ -121,11 +152,30 @@ export default class WeatherService {
     return url.toString();
   }
 
-  getSearched() {
-    return this.getItem('searched');
-  }
+  _findInHistory(...args) {
+    if (args.length < 1 || args.length > 2) new ErrorHandler('GENERAL').throw();
 
-  getFavourites() {
-    return this.getItem('favourites');
+    let history;
+    switch (args.length) {
+      case 1:
+        history = appStore.findInHistoryByName(args[0]);
+        break;
+      case 2:
+        args = [parseFloat(args[0].toFixed(4)), parseFloat(args[1].toFixed(4))]
+        history = appStore.findInHistoryByCoords(args[0], args[1]);
+        break;
+    }
+    
+    if (history) {
+      if (Math.abs(dayjs(history.timestamp).diff(dayjs())) >= appStore.getMaxAge()) {
+        appStore.removeFromHistory(history);
+        return undefined;
+      }
+      
+      appStore.setCityData({ ...history });
+      appStore.addToHistory(history);
+    }
+
+    return history;
   }
 }

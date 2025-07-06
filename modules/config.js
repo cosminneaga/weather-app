@@ -46,6 +46,7 @@ export const MOCK_DATA = {
   id: 3163858,
   name: 'Zocca',
   cod: 200,
+  timestamp: dayjs('2025-01-01')
 };
 
 export const CONFIG = {
@@ -53,17 +54,27 @@ export const CONFIG = {
   API_BASE_URL: 'https://api.openweathermap.org/data/2.5',
   ICON_BASE_URL: 'https://openweathermap.org/img/wn',
   MAX_HISTORY_ITEMS: 10,
+  ENVIRONMENT: 'development',
   LOGGING: {
     ENABLED: true,
     LEVEL: 'debug', // 'debug', 'info', 'warn', 'error'
     MAX_LOGS: 100,
-    CONSOLE_ENABLED: true,
+    CONSOLE_ENABLED: false,
   },
   DEFAULT: {
     CITY: 'Cluj',
     UNIT: 'metric',
     LANG: 'ro',
     THEME: 'light',
+  },
+  DATA_TYPE: ['default', 'ip', 'gps', 'api'],
+  TIMER: {
+    WEATHER: 30000,
+    BENCHMARK: 60000,
+  },
+  CACHE: {
+    CITY: 10 * 60 * 1000,
+    // CITY: 120000,
   }
 };
 
@@ -87,6 +98,12 @@ export const TRANSLATION = {
         theme: 'Selectează temă',
       },
     },
+    cityDetails: {
+      default: 'Oras default',
+      gps: 'GPS locator',
+      ip: 'IP locator',
+      api: 'Cautare prin API'
+    },
     searchButton: 'Caută',
     humidity: 'Umiditate',
     pressure: 'Presiune',
@@ -107,6 +124,12 @@ export const TRANSLATION = {
         temperature: 'Select temperature unit',
         theme: 'Select theme',
       },
+    },
+    cityDetails: {
+      default: 'Default city',
+      gps: 'GPS location',
+      ip: 'IP location',
+      api: 'API search'
     },
     searchButton: 'Search',
     humidity: 'Humidity',

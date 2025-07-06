@@ -5,7 +5,7 @@
  * @class
  */
 import { LocationServiceError, LocationServiceAPIError, LocationServiceGPSError } from './error/types.js';
-import {logger} from './logger.js';
+import { logger } from './logger.js';
 
 export default class LocationService {
   constructor() {

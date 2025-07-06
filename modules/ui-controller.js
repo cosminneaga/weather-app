@@ -10,6 +10,7 @@ import {
 import { getTranslation } from '../modules/config.js';
 import { appStore } from './stores/index.js';
 import { logger } from './logger.js';
+import { CONFIG } from '../modules/config.js';
 const weatherService = new WeatherService();
 
 const elements = {
@@ -20,7 +21,8 @@ const elements = {
   downloadLogsBtn: document.querySelector('#download-logs-button'),
   card: document.querySelector('#weather-card'),
   cityName: document.querySelector('#city-name'),
-  favouritesBtn: document.querySelector('#favourites-select'),
+  cityDetails: document.querySelector('#city-details'),
+  restartBtn: document.querySelector('#restart'),
   icon: document.querySelector('#icon'),
   temperature: document.querySelector('#temperature'),
   description: document.querySelector('#description'),
@@ -56,7 +58,24 @@ const elements = {
     container: document.querySelector('#search-history-container'),
     list: document.querySelector('#weather-search-history-list'),
     clearBtn: document.querySelector('#search-history-clear-button')
-  } 
+  }
+};
+
+export const setupEnvironmentElements = () => {
+  switch (CONFIG.ENVIRONMENT) {
+    case 'development':
+      elements.downloadLogsBtn.parentElement.classList.remove('hidden');
+      break;
+    default:
+      elements.downloadLogsBtn.parentElement.classList.add('hidden');
+      break;
+  }
+};
+
+export const setupTimers = () => {
+  setInterval(() => {
+    elements.cityDetails.textContent = `${appStore.getDetails()} -- ${appStore.getCityTimestampToNow()}`;
+  }, CONFIG.TIMER.WEATHER);
 };
 
 export const setupEventListeners = () => {
@@ -65,23 +84,27 @@ export const setupEventListeners = () => {
     appStore.setCity(getCityInput().trim());
     logger.info('Form submitted', appStore.getAll());
     await handleSearch();
+    appStore.countUpUiUpdate();
   });
 
   elements.error.closeBtn.addEventListener('click', () => {
     clearCityInput();
     hideError();
+    appStore.countUpUiUpdate();
   });
 
   elements.selector.language.select.addEventListener('change', async (event) => {
     appStore.setLang(event.target.value);
     logger.info('Language changed', appStore.getAll());
-    await handleSearch();
+    await handleSearch(false);
+    appStore.countUpUiUpdate();
   });
 
   elements.selector.temperature.select.addEventListener('change', async (event) => {
     appStore.setUnit(event.target.value);
     logger.info('Unit changed', appStore.getAll());
-    await handleSearch();
+    await handleSearch(false);
+    appStore.countUpUiUpdate();
   });
 
   elements.selector.theme.select.addEventListener('change', (event) => {
@@ -94,10 +117,11 @@ export const setupEventListeners = () => {
     appStore.clearHistory();
     logger.info('Searching history clear.', appStore.getAll());
     displaySearchHistoryAndSetupEvents(appStore.getHistory());
+    appStore.countUpUiUpdate();
   });
 
-  elements.favouritesBtn.addEventListener('click', () => {
-    // TODO code to be added at later stage
+  elements.restartBtn.addEventListener('click', () => {
+    handleSearch(false);
   });
 
   elements.downloadLogsBtn.addEventListener('click', () => {
@@ -108,6 +132,7 @@ export const setupEventListeners = () => {
     document.body.appendChild(a);
     a.click();
     a.remove();
+    appStore.countUpUiUpdate();
   });
 };
 
@@ -117,14 +142,14 @@ export const setupSelectors = (lang, unit, theme) => {
   elements.selector.theme.select.value = theme;
 };
 
-export const handleSearch = async () => {
+export const handleSearch = async (cacheEnabled = true) => {
   const {
     data: { city, lang, unit, list },
   } = appStore;
   showLoading();
 
   try {
-    const cityWeather = await weatherService.getCurrentWeather(city, lang, unit);
+    const cityWeather = await weatherService.getCurrentWeather(city, lang, unit, cacheEnabled);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
 
     displayWeather(cityWeather, unit, lang);
@@ -155,6 +180,7 @@ export const displayWeather = async (city_weather, unit, lang) => {
   } = city_weather;
 
   elements.cityName.textContent = name;
+  elements.cityDetails.textContent = `${appStore.getDetails()} -- ${appStore.getCityTimestampToNow()}`;
   elements.icon.src = weatherService._buildIconUrl(weather[0].icon);
   elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(unit)}`;
   elements.description.textContent = weather.map((item) => item.description).join(', ');
@@ -167,6 +193,7 @@ export const displayWeather = async (city_weather, unit, lang) => {
 
   displayTranslation(lang);
   displaySearchHistoryAndSetupEvents(appStore.getHistory());
+  appStore.countUpUiUpdate();
 };
 
 const displayTranslation = (language) => {
@@ -220,6 +247,7 @@ const displaySearchHistoryAndSetupEvents = (data) => {
     span.addEventListener('click', (event) => {
       appStore.setCity(JSON.parse(li.dataset.city).name);
       handleSearch();
+      appStore.countUpHistoryLoad();
     });
 
     const button = document.createElement('button');
@@ -235,24 +263,29 @@ const displaySearchHistoryAndSetupEvents = (data) => {
 
 export const showLoading = () => {
   elements.loading.classList.remove('hidden');
+  appStore.countUpUiUpdate();
 };
 
 export const hideLoading = () => {
   elements.loading.classList.add('hidden');
+  appStore.countUpUiUpdate();
 };
 
 export const showError = (message) => {
   elements.error.container.classList.remove('hidden');
   elements.error.message.textContent = message;
+  appStore.countUpUiUpdate();
 };
 
 export const hideError = () => {
   elements.error.container.classList.add('hidden');
   elements.error.message.textContent = '';
+  appStore.countUpUiUpdate();
 };
 
 export const setTheme = (theme) => {
   elements.app.className = `container ${theme}`;
+  appStore.countUpUiUpdate();
 };
 
 const getCityInput = () => {
@@ -261,4 +294,5 @@ const getCityInput = () => {
 
 const clearCityInput = () => {
   elements.cityInput.value = '';
+  appStore.countUpUiUpdate();
 };
