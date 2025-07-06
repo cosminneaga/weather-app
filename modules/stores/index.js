@@ -67,14 +67,6 @@ export default class AppStore extends Storage {
   }
 
   /**
-   * Retrieves the details from the data object.
-   * @returns {Object} The details stored in the data object.
-   */
-  getDetails() {
-    return this.data.details;
-  }
-
-  /**
    * Retrieves the list of favourite items from the store data.
    * @returns {Array} An array containing the user's favourite items.
    */
@@ -132,6 +124,14 @@ export default class AppStore extends Storage {
   }
 
   /**
+   * Retrieves the message details from the city data.
+   * @returns {string} The message from the city details.
+   */
+  getDetails() {
+    return this.data.cityData.details.message;
+  }
+
+  /**
    * Returns a human-readable relative time string from the city's timestamp to now.
    * Sets the locale based on the current language.
    * @returns {string} A string representing the time elapsed since the city's timestamp (e.g., "3 hours ago").
@@ -147,7 +147,7 @@ export default class AppStore extends Storage {
     return city;
   }
 
-  findInHistoryByCoords(lat, lon) {    
+  findInHistoryByCoords(lat, lon) {
     const city = this.getHistory().find(city => city.coord.lat === lat && city.coord.lon === lon);
     this.setItem(city, 'cityData');
     return city;
@@ -186,14 +186,6 @@ export default class AppStore extends Storage {
     this.setItem(theme, 'theme');
   }
 
-  /**
-   * Retrieves the message details from the city data.
-   * @returns {string} The message from the city details.
-   */
-  getDetails() {
-    return this.data.cityData.details.message;
-  }
-  
   /**
    * Generates city details based on the provided type.
    *

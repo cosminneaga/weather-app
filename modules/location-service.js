@@ -6,7 +6,6 @@
  */
 import { LocationServiceError, LocationServiceAPIError, LocationServiceGPSError } from './error/types.js';
 import { logger } from './logger.js';
-import { appStore } from './stores/index.js';
 
 export default class LocationService {
   constructor() {

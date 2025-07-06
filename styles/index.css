@@ -125,11 +125,11 @@ body:has(div.dark) {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
 
-    i:hover {
-        cursor: pointer;
-        color: yellow;
-    }
+.weather-header i:hover {
+    cursor: pointer;
+    color: yellow;
 }
 
 .weather-header div:nth-child(1) {

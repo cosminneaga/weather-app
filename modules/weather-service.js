@@ -83,10 +83,12 @@ export default class WeatherService {
    * @param {string} unit - The unit system for temperature (e.g., 'metric', 'imperial').
    * @returns {Promise<Object>} The weather data as a JSON object. If an error occurs, returns fallback mock data with error details.
    */
-  async getWeatherByCoords(latitude, longitude, lang, unit, source) {
+  async getWeatherByCoords(latitude, longitude, lang, unit, source, cacheEnabled = true) {
     try {
-      const history = this._findInHistory(latitude, longitude);
-      if (history) return history;
+      if (cacheEnabled) {
+        const history = this._findInHistory(latitude, longitude);
+        if (history) return history;
+      }
 
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { lat: latitude, lon: longitude, lang: lang, units: unit })
@@ -151,7 +153,7 @@ export default class WeatherService {
   }
 
   _findInHistory(...args) {
-    if (args.length < 1 && args.length > 2) new ErrorHandler('GENERAL').throw();
+    if (args.length < 1 || args.length > 2) new ErrorHandler('GENERAL').throw();
 
     let history;
     switch (args.length) {

@@ -290,7 +290,6 @@ export const setTheme = (theme) => {
 
 const getCityInput = () => {
   return elements.cityInput.value;
-  appStore.countUpUiUpdate();
 };
 
 const clearCityInput = () => {
