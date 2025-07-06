@@ -33,6 +33,13 @@ export default class WeatherService {
       const cityWithoutDiacritics = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler('CITY_INVALID').throw();
 
+      const history = appStore.findInHistoryByName(cityWithoutDiacritics);
+      if (history) {
+        
+      appStore.setCityData({ ...history });
+        return history;
+      }
+
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
       );
@@ -40,12 +47,27 @@ export default class WeatherService {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      appStore.addToHistory(json);
+
+      appStore.addToHistory({
+        ...json,
+        timestamp: dayjs(),
+        source: 'api',
+      });
+      appStore.setCityData({
+        ...json,
+        timestamp: dayjs(),
+        source: 'api',
+      });
       logger.info('[getCurrentWeather] City data has been retrieved and added to history', json);
       appStore.countUpApiCall();
+
       return json;
     } catch (error) {
       logger.error('[getCurrentWeather] MOCK_DATA has been loaded to UI', error);
+      appStore.setCityData({
+        ...MOCK_DATA,
+        source: 'default'
+      });
 
       return {
         ...MOCK_DATA,
@@ -65,7 +87,7 @@ export default class WeatherService {
    * @param {string} unit - The unit system for temperature (e.g., 'metric', 'imperial').
    * @returns {Promise<Object>} The weather data as a JSON object. If an error occurs, returns fallback mock data with error details.
    */
-  async getWeatherByCoords(latitude, longitude, lang, unit) {
+  async getWeatherByCoords(latitude, longitude, lang, unit, source) {
     try {
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { lat: latitude, lon: longitude, lang: lang, units: unit })
@@ -74,12 +96,26 @@ export default class WeatherService {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      appStore.addToHistory(json);
+      appStore.addToHistory({
+        ...json,
+        timestamp: dayjs(),
+        source: source,
+      });
+      appStore.setCityData({
+        ...json,
+        timestamp: dayjs(),
+        source: source,
+      });
       logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
       appStore.countUpApiCall();
+
       return json;
     } catch (error) {
       logger.error('[getWeatherByCoords] MOCK_DATA has been loaded to UI', error);
+      appStore.setCityData({
+        ...MOCK_DATA,
+        source: 'default'
+      })
 
       return {
         ...MOCK_DATA,

@@ -46,6 +46,7 @@ export const MOCK_DATA = {
   id: 3163858,
   name: 'Zocca',
   cod: 200,
+  timestamp: dayjs('2025-01-01')
 };
 
 export const CONFIG = {
@@ -66,7 +67,14 @@ export const CONFIG = {
     LANG: 'ro',
     THEME: 'light',
   },
-  DATA_TYPE: ['default', 'ip', 'gps']
+  DATA_TYPE: ['default', 'ip', 'gps', 'api'],
+  TIMER: {
+    WEATHER: 30000,
+    BENCHMARK: 60000,
+  },
+  CACHE: {
+    CITY: 10 * 60 * 1000,
+  }
 };
 
 export const API_ENDPOINTS = {
@@ -93,6 +101,7 @@ export const TRANSLATION = {
       default: 'Oras default',
       gps: 'GPS locator',
       ip: 'IP locator',
+      api: 'Cautare prin API'
     },
     searchButton: 'Caută',
     humidity: 'Umiditate',
@@ -118,7 +127,8 @@ export const TRANSLATION = {
     cityDetails: {
       default: 'Default city',
       gps: 'GPS location',
-      ip: 'IP location'
+      ip: 'IP location',
+      api: 'API search'
     },
     searchButton: 'Search',
     humidity: 'Humidity',

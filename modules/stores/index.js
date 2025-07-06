@@ -1,10 +1,10 @@
 
 import Storage from '../storage.js';
-import { CONFIG, getTranslation } from '../config.js';
+import { CONFIG, MOCK_DATA, getTranslation } from '../config.js';
 import { AppStoreError } from '../error/types.js';
 
 export default class AppStore extends Storage {
-  constructor(city, unit, lang, theme, details = '', favourites = [], history = []) {
+  constructor(city, unit, lang, theme, favourites = [], history = []) {
     super({
       city: city,
       unit: unit,
@@ -14,14 +14,15 @@ export default class AppStore extends Storage {
       history: history,
       favouritesLimit: 10,
       historyLimit: 10,
-      details: details,
       benchmark: {
         appLoad: 0,
         apiCall: 0,
         uiUpdate: 0,
         historyLoad: 0,
       },
-      timestamp: dayjs()
+      timestamp: dayjs(),
+      maxAge: CONFIG.CACHE.CITY,
+      cityData: MOCK_DATA,
     });
   }
 
@@ -120,13 +121,47 @@ export default class AppStore extends Storage {
   }
 
   /**
+   * Retrieves the maximum age value from the data store.
+   *
+   * @returns {number} The maximum age stored in the data.
+   */
+  getMaxAge() {
+    return this.data.maxAge;
+  }
+
+  /**
+   * Retrieves the city data from the store.
+   *
+   * @returns {Object} The city data object.
+   */
+  getCityData() {
+    return this.data.cityData;
+  }
+
+  /**
+   * Returns a human-readable relative time string from the city's timestamp to now.
+   * Sets the locale based on the current language.
+   *
+   * @returns {string} A string representing the time elapsed since the city's timestamp (e.g., "3 hours ago").
+   */
+  getCityTimestampToNow() {
+    dayjs.locale(this.getLang());
+    return dayjs().to(this.data.cityData.timestamp);
+  }
+
+  findInHistoryByName(cityName) {
+    const city = this.getHistory().find(city => city.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === cityName);
+    this.setItem(city, 'cityData');
+    return city;
+  }
+
+  /**
    * Sets the current city in the store and updates the store's state.
    *
    * @param {string} city - The name of the city to set.
    */
   setCity(city) {
     this.setItem(city, 'city');
-    this.setTimestampToNow();
   }
 
   /**
@@ -145,7 +180,7 @@ export default class AppStore extends Storage {
    */
   setLang(lang) {
     this.setItem(lang, 'lang');
-    this.setDetails(this.getDetails().type);
+    this.setCityData(this.data.cityData);
   }
 
   /**
@@ -157,25 +192,41 @@ export default class AppStore extends Storage {
     this.setItem(theme, 'theme');
   }
 
+  getDetails() {
+    return this.data.cityData.details.message;
+  }
+  
   /**
-   * Sets the provided details in the store.
+   * Generates city details based on the provided type.
    *
-   * @param {Object} details - The details object to be stored.
+   * @param {string} type - The type of city details to generate. Must be one of the values in CONFIG.DATA_TYPE (e.g., "default", "ip", "gps").
+   * @returns {{ type: string, message: string }} An object containing the type and the corresponding translated message.
+   * @throws {AppStoreError} If the provided type is not valid.
    */
-  setDetails(type) {
+  generateDetails(type) {
     if (!CONFIG.DATA_TYPE.includes(type)) throw new AppStoreError('City details type must be one of the followings: "default", "ip", "gps"');
 
     const lang = this.getLang();
     const translation = getTranslation(lang);
 
-    this.setItem({
+    return {
       type: type,
       message: translation.cityDetails[type]
-    }, 'details');
+    };
   }
 
-  setTimestampToNow() {
-    this.data.timestamp = dayjs();
+  /**
+   * Stores city data along with the current timestamp.
+   *
+   * @param {Object} cityData - The data object containing information about the city.
+   * @returns {void}
+   */
+  setCityData(cityData) {
+    this.setItem({
+      ...cityData,
+      timestamp: dayjs(),
+      details: { ...this.generateDetails(cityData.source) }
+    }, 'cityData');
   }
 
   /**
@@ -300,9 +351,8 @@ export default class AppStore extends Storage {
  * @param {string} CONFIG.DEFAULT.THEME - The default theme for the app (e.g., light or dark).
  */
 export const appStore = new AppStore(
-  CONFIG.DEFAULT.CITY, 
-  CONFIG.DEFAULT.UNIT, 
-  CONFIG.DEFAULT.LANG, 
+  CONFIG.DEFAULT.CITY,
+  CONFIG.DEFAULT.UNIT,
+  CONFIG.DEFAULT.LANG,
   CONFIG.DEFAULT.THEME,
-  getTranslation(CONFIG.DEFAULT.LANG).cityDetails.default,
 );

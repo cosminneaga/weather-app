@@ -74,8 +74,8 @@ export const setupEnvironmentElements = () => {
 
 export const setupTimers = () => {
   setInterval(() => {
-    elements.cityDetails.textContent = `${appStore.getDetails().message} -- ${appStore.getToNow()}`;
-  }, 1000);
+    elements.cityDetails.textContent = `${appStore.getDetails().message} -- ${appStore.getCityTimestampToNow()}`;
+  }, CONFIG.TIMER.WEATHER);
 };
 
 export const setupEventListeners = () => {
@@ -180,7 +180,7 @@ export const displayWeather = async (city_weather, unit, lang) => {
   } = city_weather;
 
   elements.cityName.textContent = name;
-  elements.cityDetails.textContent = `${appStore.getDetails().message} -- ${appStore.getToNow()}`;
+  elements.cityDetails.textContent = `${appStore.getDetails()} -- ${appStore.getCityTimestampToNow()}`;
   elements.icon.src = weatherService._buildIconUrl(weather[0].icon);
   elements.temperature.textContent = `${temp.toFixed(1)}${getTemperatureSymbol(unit)}`;
   elements.description.textContent = weather.map((item) => item.description).join(', ');

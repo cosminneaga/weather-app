@@ -45,7 +45,6 @@ export default class LocationService {
         accuracy: 'city',
       };
       logger.info('[LocationService.getByAPI] Location retrieved using API', result);
-      appStore.countUpApiCall();
       return result;
     } catch (error) {
       logger.error(`[LocationService.getByAPI] API location failed: ${error.message}`, error);
