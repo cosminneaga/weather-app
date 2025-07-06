@@ -28,13 +28,15 @@ export default class WeatherService {
    * @param {string} unit - The unit system for temperature ('metric', 'imperial', etc.).
    * @returns {Promise<Object>} The weather data as a JSON object. Returns fallback data with `isFallback: true` if an error occurs.
    */
-  async getCurrentWeather(city, lang, unit) {
+  async getCurrentWeather(city, lang, unit, cacheEnabled = true) {
     try {
       const cityWithoutDiacritics = city.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (!isValidCity(cityWithoutDiacritics)) new ErrorHandler('CITY_INVALID').throw();
 
-      const history = this._findInHistory(cityWithoutDiacritics);
-      if (history) return history;
+      if (cacheEnabled) {
+        const history = this._findInHistory(cityWithoutDiacritics);
+        if (history) return history;
+      }
 
       const request = await fetch(
         this._buildWeatherUrl(API_ENDPOINTS.WEATHER, { q: cityWithoutDiacritics, lang: lang, units: unit })
@@ -93,15 +95,8 @@ export default class WeatherService {
         new ErrorHandler(request.status).throw();
       }
       const json = await request.json();
-      appStore.addToHistory({
-        ...json,
-        timestamp: dayjs(),
-        source: source,
-      });
-      appStore.setCityData({
-        ...json,
-        source: source,
-      });
+      appStore.addToHistory({ ...json, source: source });
+      appStore.setCityData({ ...json, source: source });
       logger.info('[getWeatherByCoords] City data has been retrieved and added to history', json);
       appStore.countUpApiCall();
 
@@ -168,6 +163,7 @@ export default class WeatherService {
         history = appStore.findInHistoryByCoords(args[0], args[1]);
         break;
     }
+    console.log(args, history)
     
     if (history) {
       if (Math.abs(dayjs(history.timestamp).diff(dayjs())) >= appStore.getMaxAge()) {

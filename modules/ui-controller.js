@@ -22,7 +22,6 @@ const elements = {
   card: document.querySelector('#weather-card'),
   cityName: document.querySelector('#city-name'),
   cityDetails: document.querySelector('#city-details'),
-  favouritesBtn: document.querySelector('#favourites-select'),
   restartBtn: document.querySelector('#restart'),
   icon: document.querySelector('#icon'),
   temperature: document.querySelector('#temperature'),
@@ -121,12 +120,8 @@ export const setupEventListeners = () => {
     appStore.countUpUiUpdate();
   });
 
-  elements.favouritesBtn.addEventListener('click', () => {
-    // TODO code to be added at later stage
-  });
-
   elements.restartBtn.addEventListener('click', () => {
-    // TODO code to be added at later stage
+    handleSearch(false);
   });
 
   elements.downloadLogsBtn.addEventListener('click', () => {
@@ -147,14 +142,14 @@ export const setupSelectors = (lang, unit, theme) => {
   elements.selector.theme.select.value = theme;
 };
 
-export const handleSearch = async () => {
+export const handleSearch = async (cacheEnabled = true) => {
   const {
     data: { city, lang, unit, list },
   } = appStore;
   showLoading();
 
   try {
-    const cityWeather = await weatherService.getCurrentWeather(city, lang, unit);
+    const cityWeather = await weatherService.getCurrentWeather(city, lang, unit, cacheEnabled);
     if (cityWeather.isFallback) throw new Error(JSON.stringify(cityWeather));
 
     displayWeather(cityWeather, unit, lang);
